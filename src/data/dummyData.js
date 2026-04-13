@@ -1,0 +1,277 @@
+// ═══════════════════════════════════════════
+// FinZ — Dummy Transaction Data
+// ═══════════════════════════════════════════
+
+export const CATEGORIES = [
+  { value: 'makanan', label: '🍔 Makanan', color: '#f97316' },
+  { value: 'transport', label: '🚗 Transport', color: '#3b82f6' },
+  { value: 'hiburan', label: '🎮 Hiburan', color: '#a855f7' },
+  { value: 'belanja', label: '🛍️ Belanja', color: '#ec4899' },
+  { value: 'tagihan', label: '📱 Tagihan', color: '#ef4444' },
+  { value: 'pendidikan', label: '📚 Pendidikan', color: '#06b6d4' },
+  { value: 'kesehatan', label: '💊 Kesehatan', color: '#10b981' },
+  { value: 'lainnya', label: '📦 Lainnya', color: '#64748b' },
+];
+
+export const PAYMENT_METHODS = [
+  { value: 'cash', label: 'Cash' },
+  { value: 'debit', label: 'Kartu Debit' },
+  { value: 'credit', label: 'Kartu Kredit' },
+  { value: 'ewallet', label: 'E-Wallet (GoPay/OVO/Dana)' },
+  { value: 'transfer', label: 'Transfer Bank' },
+  { value: 'qris', label: 'QRIS' },
+];
+
+export const dummyTransactions = [
+  {
+    id: 1,
+    nominal: 35000,
+    category: 'makanan',
+    date: '2026-04-01',
+    payment_method: 'ewallet',
+    description: 'Makan siang nasi padang',
+  },
+  {
+    id: 2,
+    nominal: 15000,
+    category: 'transport',
+    date: '2026-04-01',
+    payment_method: 'ewallet',
+    description: 'Gojek ke kampus',
+  },
+  {
+    id: 3,
+    nominal: 120000,
+    category: 'belanja',
+    date: '2026-04-02',
+    payment_method: 'debit',
+    description: 'Beli baju di Uniqlo',
+  },
+  {
+    id: 4,
+    nominal: 50000,
+    category: 'hiburan',
+    date: '2026-04-02',
+    payment_method: 'ewallet',
+    description: 'Nonton bioskop',
+  },
+  {
+    id: 5,
+    nominal: 25000,
+    category: 'makanan',
+    date: '2026-04-03',
+    payment_method: 'cash',
+    description: 'Kopi di Starbucks',
+  },
+  {
+    id: 6,
+    nominal: 200000,
+    category: 'tagihan',
+    date: '2026-04-03',
+    payment_method: 'transfer',
+    description: 'Bayar kuota internet bulanan',
+  },
+  {
+    id: 7,
+    nominal: 45000,
+    category: 'makanan',
+    date: '2026-04-04',
+    payment_method: 'qris',
+    description: 'Makan malam di warteg',
+  },
+  {
+    id: 8,
+    nominal: 12000,
+    category: 'transport',
+    date: '2026-04-04',
+    payment_method: 'ewallet',
+    description: 'Grab ke mall',
+  },
+  {
+    id: 9,
+    nominal: 350000,
+    category: 'pendidikan',
+    date: '2026-04-05',
+    payment_method: 'transfer',
+    description: 'Beli buku kuliah semester ini',
+  },
+  {
+    id: 10,
+    nominal: 75000,
+    category: 'hiburan',
+    date: '2026-04-05',
+    payment_method: 'ewallet',
+    description: 'Langganan Spotify Premium',
+  },
+  {
+    id: 11,
+    nominal: 28000,
+    category: 'makanan',
+    date: '2026-04-06',
+    payment_method: 'cash',
+    description: 'Beli makan di kantin kampus',
+  },
+  {
+    id: 12,
+    nominal: 150000,
+    category: 'kesehatan',
+    date: '2026-04-06',
+    payment_method: 'debit',
+    description: 'Beli vitamin dan obat',
+  },
+  {
+    id: 13,
+    nominal: 85000,
+    category: 'belanja',
+    date: '2026-04-07',
+    payment_method: 'ewallet',
+    description: 'Belanja skincare di Sociolla',
+  },
+  {
+    id: 14,
+    nominal: 20000,
+    category: 'transport',
+    date: '2026-04-07',
+    payment_method: 'ewallet',
+    description: 'Gojek pulang dari gym',
+  },
+  {
+    id: 15,
+    nominal: 55000,
+    category: 'makanan',
+    date: '2026-04-08',
+    payment_method: 'qris',
+    description: 'Makan sushi di resto Jepang',
+  },
+  {
+    id: 16,
+    nominal: 100000,
+    category: 'hiburan',
+    date: '2026-04-08',
+    payment_method: 'debit',
+    description: 'Top up game Mobile Legends',
+  },
+  {
+    id: 17,
+    nominal: 40000,
+    category: 'makanan',
+    date: '2026-04-09',
+    payment_method: 'cash',
+    description: 'Beli bakso dan es teh',
+  },
+  {
+    id: 18,
+    nominal: 300000,
+    category: 'tagihan',
+    date: '2026-04-09',
+    payment_method: 'transfer',
+    description: 'Bayar listrik kosan',
+  },
+  {
+    id: 19,
+    nominal: 180000,
+    category: 'belanja',
+    date: '2026-04-10',
+    payment_method: 'credit',
+    description: 'Beli case HP dan aksesoris',
+  },
+  {
+    id: 20,
+    nominal: 22000,
+    category: 'transport',
+    date: '2026-04-10',
+    payment_method: 'ewallet',
+    description: 'Naik Grab ke stasiun',
+  },
+  {
+    id: 21,
+    nominal: 65000,
+    category: 'makanan',
+    date: '2026-04-11',
+    payment_method: 'qris',
+    description: 'Dinner di McDonalds',
+  },
+  {
+    id: 22,
+    nominal: 30000,
+    category: 'lainnya',
+    date: '2026-04-11',
+    payment_method: 'cash',
+    description: 'Fotocopy tugas kuliah',
+  },
+  {
+    id: 23,
+    nominal: 250000,
+    category: 'belanja',
+    date: '2026-04-12',
+    payment_method: 'ewallet',
+    description: 'Beli earbuds di Tokopedia',
+  },
+  {
+    id: 24,
+    nominal: 18000,
+    category: 'makanan',
+    date: '2026-04-12',
+    payment_method: 'cash',
+    description: 'Sarapan bubur ayam',
+  },
+  {
+    id: 25,
+    nominal: 90000,
+    category: 'kesehatan',
+    date: '2026-04-13',
+    payment_method: 'debit',
+    description: 'Gym membership mingguan',
+  },
+];
+
+// ═══════════ Dummy AI Predictions ═══════════
+
+export const dummyPrediction = {
+  current_balance: 3500000,
+  predicted_end_balance: 1850000,
+  status: 'warning', // 'aman' | 'warning' | 'bahaya'
+  message: 'Pengeluaranmu cukup tinggi bulan ini. Kurangi belanja hiburan untuk menjaga saldo.',
+};
+
+export const dummyFinancialScore = {
+  score: 72,
+  category: 'Cukup Baik',
+  breakdown: {
+    saving_ratio: 65,
+    spending_consistency: 78,
+    category_diversity: 80,
+    bill_payment: 70,
+  },
+};
+
+export const dummyRecommendations = [
+  {
+    id: 1,
+    title: 'Kurangi Pengeluaran Makanan',
+    description: 'Pengeluaran makananmu 35% dari total. Coba meal prep di rumah untuk hemat hingga Rp500.000/bulan.',
+    type: 'warning',
+    icon: '🍔',
+  },
+  {
+    id: 2,
+    title: 'Mulai Investasi Kecil',
+    description: 'Kamu bisa mulai investasi reksadana mulai Rp100.000. Pertimbangkan untuk alokasi 10% penghasilan.',
+    type: 'tip',
+    icon: '📈',
+  },
+  {
+    id: 3,
+    title: 'Buat Dana Darurat',
+    description: 'Siapkan dana darurat 3-6 bulan pengeluaran. Saat ini kamu baru memiliki 1.5 bulan.',
+    type: 'important',
+    icon: '🛡️',
+  },
+  {
+    id: 4,
+    title: 'Gunakan E-Wallet dengan Cashback',
+    description: 'Manfaatkan promo cashback dari DANA atau OVO untuk pengeluaran rutin.',
+    type: 'tip',
+    icon: '💰',
+  },
+];
