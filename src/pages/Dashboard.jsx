@@ -20,7 +20,31 @@ import {
 } from '@phosphor-icons/react';
 
 export default function Dashboard() {
-  const { summary, prediction, financialScore, recommendations, transactions } = useFinance();
+  const { summary, prediction, financialScore, recommendations, transactions, loading, error } = useFinance();
+
+  // ─── Loading State ───────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ width: '40px', height: '40px', border: '3px solid rgba(16, 185, 129, 0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <p style={{ fontSize: '14px', color: '#5a6d99' }}>Memuat dashboard...</p>
+      </div>
+    );
+  }
+
+  // ─── Error State ─────────────────────────────────────────────────
+  if (error) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', flexDirection: 'column', gap: '12px' }}>
+        <p style={{ fontSize: '16px', color: '#f87171' }}>⚠️ Gagal memuat data</p>
+        <p style={{ fontSize: '13px', color: '#5a6d99' }}>{error}</p>
+        <p style={{ fontSize: '12px', color: '#384770' }}>Pastikan backend berjalan di port 8000</p>
+      </div>
+    );
+  }
+
+  // ─── Null Guard ───────────────────────────────────────────────────
+  if (!summary || !prediction || !financialScore) return null;
 
   const recentTransactions = [...transactions]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -91,9 +115,8 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <p style={{ fontSize: '10px', color: '#5a6d99', marginBottom: '4px' }}>Rp</p>
               <p className="stat-value" style={{ lineHeight: 1 }}>
-                {(prediction.current_balance / 1000).toLocaleString('id-ID')}<span style={{ fontSize: '16px', color: '#8b9cc4' }}>.000</span>
+                {formatCurrency(prediction.current_balance)}
               </p>
             </div>
           </div>

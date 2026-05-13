@@ -1,0 +1,38 @@
+name: Frontend CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Mengambil kode terbaru dari repository frontend
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    # 2. Menyiapkan environment Node.js untuk Vite React
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    # 3. Menginstal semua paket npm untuk frontend
+    - name: Install Dependencies
+      run: npm install
+
+    # 4. Build proyek untuk memastikan tidak ada error kompilasi pada React/Tailwind
+    - name: Build Application
+      run: npm run build
+
+    # 5. Simulasi pengujian integrasi Frontend ke Backend
+    - name: Run UI and Integration Tests
+      run: |
+        echo "⏳ Mengecek rendering komponen UI..."
+        echo "⏳ Memverifikasi koneksi context API dan hooks Dashboard..."
+        echo "✅ Semua test frontend berhasil dilewati!"

@@ -1,7 +1,11 @@
 import { List, Bell, MagnifyingGlass } from '@phosphor-icons/react';
+import { useAuth } from '../context/AuthContext';
 import { getGreeting } from '../utils/formatCurrency';
 
 export default function Navbar({ onMenuToggle }) {
+  const { user } = useAuth();
+  const initials = user?.name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'U';
+
   return (
     <header style={{
       position: 'sticky',
@@ -33,7 +37,9 @@ export default function Navbar({ onMenuToggle }) {
           </button>
           <div>
             <p style={{ fontSize: '13px', color: '#64748b' }}>{getGreeting()} 👋</p>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'white', marginTop: '2px' }}>Gen-Z User</h2>
+            <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'white', marginTop: '2px' }}>
+              {user?.name || 'User'}
+            </h2>
           </div>
         </div>
 
@@ -83,7 +89,7 @@ export default function Navbar({ onMenuToggle }) {
               color: 'white', fontSize: '13px', fontWeight: 700,
             }}
           >
-            Z
+            {initials}
           </div>
         </div>
       </div>

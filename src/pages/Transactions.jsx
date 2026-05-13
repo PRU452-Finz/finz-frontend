@@ -19,7 +19,7 @@ import {
 const PER_PAGE = 10;
 
 export default function Transactions() {
-  const { transactions, deleteTransaction } = useFinance();
+  const { transactions, deleteTransaction, loading, error } = useFinance();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
@@ -53,16 +53,19 @@ export default function Transactions() {
 
   const totalFiltered = filteredTransactions.reduce((sum, t) => sum + t.nominal, 0);
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     setDeletingId(id);
-    setTimeout(() => {
-      deleteTransaction(id);
-      setDeletingId(null);
-      // If current page becomes empty after delete, go to previous page
+    try {
+      await deleteTransaction(id);
+      // Jika halaman saat ini jadi kosong setelah hapus, kembali ke halaman sebelumnya
       const newTotal = sortedTransactions.length - 1;
       const newTotalPages = Math.max(1, Math.ceil(newTotal / PER_PAGE));
       if (currentPage > newTotalPages) setCurrentPage(newTotalPages);
-    }, 300);
+    } catch (err) {
+      console.error('[Transactions] Gagal hapus:', err);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const clearFilters = () => {
@@ -84,6 +87,27 @@ export default function Transactions() {
     for (let i = start; i <= end; i++) pages.push(i);
     return pages;
   };
+
+  // ─── Loading State ───────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ width: '40px', height: '40px', border: '3px solid rgba(16, 185, 129, 0.2)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <p style={{ fontSize: '14px', color: '#5a6d99' }}>Memuat transaksi...</p>
+      </div>
+    );
+  }
+
+  // ─── Error State ─────────────────────────────────────────────────
+  if (error) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', flexDirection: 'column', gap: '12px' }}>
+        <p style={{ fontSize: '16px', color: '#f87171' }}>⚠️ Gagal memuat data</p>
+        <p style={{ fontSize: '13px', color: '#5a6d99' }}>{error}</p>
+        <p style={{ fontSize: '12px', color: '#384770' }}>Pastikan backend berjalan di port 8000</p>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in">

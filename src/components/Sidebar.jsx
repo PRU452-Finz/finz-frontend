@@ -1,24 +1,35 @@
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import {
   House,
   Receipt,
   PlusCircle,
-  Lightning,
-  Gear,
+  Wallet,
+  UserCircle,
   SignOut,
   X,
-  ChartPieSlice,
-  Brain,
+  Lightning,
 } from '@phosphor-icons/react';
 
 const navLinks = [
   { to: '/', label: 'Dashboard', icon: House },
   { to: '/transactions', label: 'Transaksi', icon: Receipt },
   { to: '/add', label: 'Tambah', icon: PlusCircle },
+  { to: '/budget', label: 'Budget', icon: Wallet },
+  { to: '/profile', label: 'Profil', icon: UserCircle },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+    onClose();
+  };
+
+  const initials = user?.name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'U';
 
   return (
     <>
@@ -80,18 +91,11 @@ export default function Sidebar({ isOpen, onClose }) {
 
         {/* Bottom */}
         <div style={{ padding: '12px 14px', borderTop: '1px solid rgba(16, 185, 129, 0.06)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <button style={{
+          <button onClick={handleLogout} style={{
             display: 'flex', alignItems: 'center', gap: '12px', width: '100%',
             padding: '11px 14px', borderRadius: '10px', fontSize: '13px', fontWeight: 500,
-            color: '#8b9cc4', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
-          }}>
-            <Gear size={18} weight="duotone" />
-            Pengaturan
-          </button>
-          <button style={{
-            display: 'flex', alignItems: 'center', gap: '12px', width: '100%',
-            padding: '11px 14px', borderRadius: '10px', fontSize: '13px', fontWeight: 500,
-            color: '#8b9cc4', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+            color: '#f87171', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+            transition: 'all 0.2s',
           }}>
             <SignOut size={18} weight="duotone" />
             Keluar
@@ -106,10 +110,12 @@ export default function Sidebar({ isOpen, onClose }) {
               background: 'linear-gradient(135deg, #10b981, #8b5cf6)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: 'white', fontSize: '13px', fontWeight: 700, flexShrink: 0,
-            }}>Z</div>
+            }}>{initials}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: '13px', fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Gen-Z User</p>
-              <p style={{ fontSize: '10px', color: '#5a6d99' }}>user@finz.app</p>
+              <p style={{ fontSize: '13px', fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user?.name || 'User'}
+              </p>
+              <p style={{ fontSize: '10px', color: '#5a6d99' }}>{user?.email || ''}</p>
             </div>
           </div>
         </div>

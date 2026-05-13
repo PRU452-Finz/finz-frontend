@@ -34,16 +34,20 @@ export default function AddTransaction() {
 
   useEffect(() => {
     if (form.description.length >= 3) {
-      const predicted = predictCategory(form.description);
-      if (predicted && predicted !== form.category) {
-        setAiSuggestion(predicted);
-      } else {
-        setAiSuggestion(null);
-      }
+      // predictCategory sekarang async — panggil backend
+      predictCategory(form.description)
+        .then((predicted) => {
+          if (predicted && predicted !== form.category) {
+            setAiSuggestion(predicted);
+          } else {
+            setAiSuggestion(null);
+          }
+        })
+        .catch(() => setAiSuggestion(null));
     } else {
       setAiSuggestion(null);
     }
-  }, [form.description, predictCategory, form.category]);
+  }, [form.description, form.category]); // predictCategory dikeluarkan dari deps agar tidak re-run terus
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,16 +73,20 @@ export default function AddTransaction() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
     setIsSubmitting(true);
-    setTimeout(() => {
-      addTransaction({ ...form, nominal: Number(form.nominal) });
-      setIsSubmitting(false);
+    try {
+      await addTransaction({ ...form, nominal: Number(form.nominal) });
       setShowSuccess(true);
       setTimeout(() => navigate('/transactions'), 1500);
-    }, 600);
+    } catch (err) {
+      console.error('[AddTransaction] Gagal simpan:', err);
+      setErrors({ submit: err.message || 'Gagal menyimpan transaksi. Coba lagi.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (showSuccess) {
@@ -252,6 +260,11 @@ export default function AddTransaction() {
           </div>
 
           {/* Submit */}
+          {errors.submit && (
+            <p style={{ fontSize: '13px', color: '#f87171', textAlign: 'center', padding: '8px 12px', background: 'rgba(248,113,113,0.08)', borderRadius: '8px', border: '1px solid rgba(248,113,113,0.2)' }}>
+              {errors.submit}
+            </p>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '8px' }}>
             <button
               type="submit"
