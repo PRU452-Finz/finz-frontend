@@ -116,6 +116,8 @@ export default function AddTransaction() {
 
   const errorStyle = { fontSize: '12px', color: '#f87171', marginTop: '6px' };
 
+  const isIncome = form.transaction_type === 'income';
+
   return (
     <div className="animate-fade-in" style={{ maxWidth: '640px', margin: '0 auto' }}>
       {/* Header */}
@@ -132,7 +134,9 @@ export default function AddTransaction() {
         </button>
         <div>
           <h1 style={{ fontSize: '28px', fontWeight: 700, color: 'white', letterSpacing: '-0.5px' }}>Tambah Transaksi</h1>
-          <p style={{ fontSize: '14px', color: '#64748b', marginTop: '4px' }}>Catat pengeluaran barumu</p>
+          <p style={{ fontSize: '14px', color: '#64748b', marginTop: '4px' }}>
+            {isIncome ? 'Catat pemasukan barumu' : 'Catat pengeluaran barumu'}
+          </p>
         </div>
       </div>
 
@@ -196,7 +200,7 @@ export default function AddTransaction() {
               name="description"
               value={form.description}
               onChange={handleChange}
-              placeholder="Contoh: Makan siang di warteg"
+              placeholder={isIncome ? 'Contoh: Gaji bulanan dari kantor' : 'Contoh: Makan siang di warteg'}
               className="form-input"
               style={errors.description ? { borderColor: 'rgba(248, 113, 113, 0.5)' } : {}}
             />
@@ -265,7 +269,7 @@ export default function AddTransaction() {
             <div>
               <label style={labelStyle}>
                 <CreditCard size={16} color="#818cf8" />
-                Metode Pembayaran
+                {isIncome ? 'Metode Penerimaan' : 'Metode Pembayaran'}
               </label>
               <div style={{ position: 'relative' }}>
                 <select
