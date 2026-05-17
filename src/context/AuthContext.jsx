@@ -49,7 +49,7 @@ export function AuthProvider({ children }) {
 
   const updateProfile = useCallback(async (data) => {
     if (!user) return;
-    const resp = await userAPI.update(user.id, data);
+    const resp = await userAPI.updateProfile(user.id, data);
     const updated = resp.data;
     localStorage.setItem('finz_user', JSON.stringify(updated));
     setUser(updated);

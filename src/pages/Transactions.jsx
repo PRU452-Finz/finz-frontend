@@ -4,10 +4,12 @@ import { formatCurrency, formatDate } from '../utils/formatCurrency';
 import { CATEGORIES } from '../data/dummyData';
 import { CATEGORY_EMOJIS, CATEGORY_COLORS } from '../utils/constants';
 import Card from '../components/Card';
+import EditTransactionModal from '../components/EditTransactionModal';
 import {
   MagnifyingGlass,
   Funnel,
   Trash,
+  PencilSimple,
   CalendarBlank,
   CaretDown,
   CaretLeft,
@@ -19,7 +21,8 @@ import {
 const PER_PAGE = 10;
 
 export default function Transactions() {
-  const { transactions, deleteTransaction, loading, error } = useFinance();
+  const { transactions, deleteTransaction, updateTransaction, loading, error } = useFinance();
+  const [editingTransaction, setEditingTransaction] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
@@ -239,6 +242,12 @@ export default function Transactions() {
                   <p className="txn-card-amount" style={{ color: transaction.transaction_type === 'income' ? '#10b981' : '#f87171' }}>
                     {transaction.transaction_type === 'income' ? '+' : '-'}{formatCurrency(transaction.nominal)}
                   </p>
+                  <button onClick={() => setEditingTransaction(transaction)} style={{
+                    padding: '6px', borderRadius: '6px', color: '#384770',
+                    background: 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                  }} title="Edit">
+                    <PencilSimple size={15} />
+                  </button>
                   <button onClick={() => handleDelete(transaction.id)} style={{
                     padding: '6px', borderRadius: '6px', color: '#384770',
                     background: 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s',
@@ -295,6 +304,12 @@ export default function Transactions() {
           </div>
         </div>
       )}
+      {/* Edit Transaction Modal */}
+      <EditTransactionModal
+        transaction={editingTransaction}
+        onClose={() => setEditingTransaction(null)}
+        onSave={updateTransaction}
+      />
     </div>
   );
 }

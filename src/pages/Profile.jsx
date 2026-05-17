@@ -17,7 +17,7 @@ import {
 export default function Profile() {
   const { profile, budgets } = useFinance();
   const { user } = useAuth();
-  const userId = user?.id || 1;
+  const userId = user?.id;
 
   const [profileForm, setProfileForm] = useState({
     name: '',

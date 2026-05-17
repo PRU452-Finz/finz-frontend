@@ -104,13 +104,13 @@ export default function Dashboard() {
               <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
                 <circle cx="50" cy="50" r="40" fill="none" stroke="#151d35" strokeWidth="8" />
                 <circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" strokeWidth="8" strokeLinecap="round"
-                  strokeDasharray={`${(prediction.predicted_end_balance / prediction.current_balance) * 251} 251`}
+                  strokeDasharray={`${prediction.current_balance > 0 ? Math.min((prediction.predicted_end_balance / prediction.current_balance) * 251, 251) : 0} 251`}
                   style={{ transition: 'stroke-dasharray 1s ease-out' }}
                 />
               </svg>
               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#34d399' }}>
-                  {Math.round((prediction.predicted_end_balance / prediction.current_balance) * 100)}%
+                  {prediction.current_balance > 0 ? Math.round((prediction.predicted_end_balance / prediction.current_balance) * 100) : 0}%
                 </span>
               </div>
             </div>
@@ -122,8 +122,25 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Pengeluaran Card */}
+        {/* Pemasukan Card */}
         <div className="glass-card card-pad animate-fade-in-up stagger-2" style={{ opacity: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <p className="stat-label">Pemasukan</p>
+            <div style={{ padding: '8px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)' }}>
+              <TrendUp size={18} color="#34d399" weight="duotone" />
+            </div>
+          </div>
+          <p className="stat-value" style={{ marginBottom: '8px' }}>
+            {formatCurrency(summary.totalIncome)}
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Wallet size={14} color="#34d399" />
+            <span style={{ fontSize: '12px', color: '#34d399' }}>Bulan ini</span>
+          </div>
+        </div>
+
+        {/* Pengeluaran Card */}
+        <div className="glass-card card-pad animate-fade-in-up stagger-3" style={{ opacity: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
             <p className="stat-label">Pengeluaran</p>
             <div style={{ padding: '8px', borderRadius: '10px', background: 'rgba(248, 113, 113, 0.1)' }}>
@@ -140,7 +157,7 @@ export default function Dashboard() {
         </div>
 
         {/* Prediksi Card */}
-        <div className="glass-card card-pad animate-fade-in-up stagger-3" style={{ opacity: 0 }}>
+        <div className="glass-card card-pad animate-fade-in-up stagger-4" style={{ opacity: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
             <p className="stat-label">Prediksi Sisa</p>
             <div style={{ padding: '8px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)' }}>
@@ -248,8 +265,8 @@ export default function Dashboard() {
               <div className="txn-meta">
                 <span className="tag tag-purple" style={{ textTransform: 'capitalize' }}>{t.payment_method}</span>
               </div>
-              <p className="txn-amount" style={{ fontSize: '13px', fontWeight: 600, color: '#f87171', textAlign: 'right' }}>
-                -{formatCurrency(t.nominal)}
+              <p className="txn-amount" style={{ fontSize: '13px', fontWeight: 600, color: t.transaction_type === 'income' ? '#10b981' : '#f87171', textAlign: 'right' }}>
+                {t.transaction_type === 'income' ? '+' : '-'}{formatCurrency(t.nominal)}
               </p>
             </div>
           ))}

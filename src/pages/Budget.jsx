@@ -11,7 +11,7 @@ import {
 
 export default function Budget() {
   const { user } = useAuth();
-  const userId = user?.id || 1;
+  const userId = user?.id;
 
   const [budgets, setBudgets] = useState([]);
   const [alerts, setAlerts] = useState([]);

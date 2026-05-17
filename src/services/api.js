@@ -66,7 +66,7 @@ export const transactionAPI = {
 
 // ═══════════ Dashboard API ═══════════
 export const dashboardAPI = {
-  getSummary: (userId = 1) => api.get(`/dashboard?user_id=${userId}`),
+  getSummary: () => api.get('/dashboard'),
 };
 
 // ═══════════ User API ═══════════
@@ -79,14 +79,14 @@ export const userAPI = {
 
 // ═══════════ Budget API ═══════════
 export const budgetAPI = {
-  getAll:         (userId, month) => api.get(`/budgets/${userId}`, { params: { month } }),
-  createOrUpdate: (data)          => api.post('/budgets', data),
-  delete:         (id)            => api.delete(`/budgets/${id}`),
+  getAll:         (userId, month) => api.get(`/users/${userId}/budgets`, { params: { month } }),
+  createOrUpdate: (data)          => api.post(`/users/${data.user_id}/budgets`, data),
+  delete:         (id)            => api.delete(`/users/${id}/budgets`),
 };
 
 // ═══════════ Budget Alert API ═══════════
 export const budgetAlertAPI = {
-  getAlerts: (userId, month) => api.get(`/budget-alert/${userId}`, { params: { month } }),
+  getAlerts: (userId, month) => api.get(`/budget-alert/${userId}/${month}`),
 };
 
 // ═══════════ AI / Prediction API ═══════════

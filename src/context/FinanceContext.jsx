@@ -129,19 +129,25 @@ const mapFinancialScore = (data) => ({
 export function FinanceProvider({ children }) {
   const [state, dispatch] = useReducer(financeReducer, initialState);
   const { user } = useAuth();
-  const userId = user?.id || 1;
+  const userId = user?.id;
 
   // ─── Fetch semua data saat pertama mount ─────────────────────────
   useEffect(() => {
+    if (!userId) {
+      dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+      return;
+    }
+
     async function fetchAll() {
       try {
         dispatch({ type: ACTIONS.SET_LOADING, payload: true });
         dispatch({ type: ACTIONS.SET_ERROR,   payload: null });
 
         // Semua fetch paralel agar lebih cepat
+        // Backend sekarang baca user_id dari JWT token
         const [txnResp, dashResp, scoreResp, recResp, profileResp, budgetResp] = await Promise.all([
-          transactionAPI.getAll({ user_id: userId }),
-          dashboardAPI.getSummary(userId),
+          transactionAPI.getAll(),
+          dashboardAPI.getSummary(),
           recommendationAPI.getScore(userId),
           recommendationAPI.getAll(userId),
           userAPI.getProfile(userId),
@@ -153,7 +159,7 @@ export function FinanceProvider({ children }) {
         const safeBalance = Math.max(0, currentBalance);
 
         // Panggil prediction dengan saldo asli
-        const predResp = await predictionAPI.getBalance({ current_balance: safeBalance, user_id: userId });
+        const predResp = await predictionAPI.getBalance({ current_balance: safeBalance });
 
         dispatch({ type: ACTIONS.SET_TRANSACTIONS,    payload: txnResp.data   || [] });
         dispatch({ type: ACTIONS.SET_SUMMARY,         payload: summary });
@@ -177,11 +183,11 @@ export function FinanceProvider({ children }) {
   // ─── Helper: re-fetch dashboard & prediction setelah CRUD ────────
   const refreshSummaryAndPrediction = useCallback(async () => {
     try {
-      const dashResp = await dashboardAPI.getSummary(userId);
+      const dashResp = await dashboardAPI.getSummary();
       const summary = mapSummary(dashResp.data);
       const currentBalance = (summary.totalIncome || 0) - (summary.totalSpending || 0);
       
-      const predResp = await predictionAPI.getBalance({ current_balance: Math.max(0, currentBalance), user_id: userId });
+      const predResp = await predictionAPI.getBalance({ current_balance: Math.max(0, currentBalance) });
       
       dispatch({ type: ACTIONS.SET_SUMMARY,    payload: summary });
       dispatch({ type: ACTIONS.SET_PREDICTION, payload: mapPrediction(predResp.data) });
@@ -200,7 +206,6 @@ export function FinanceProvider({ children }) {
       date:             formData.date || new Date().toISOString().slice(0, 10),
       transaction_type: formData.transaction_type || 'expense',
       is_recurring:     formData.is_recurring || false,
-      user_id:          userId,
     });
 
     const newTxn = resp.data;

@@ -6,6 +6,10 @@ export const CATEGORY_COLORS = {
   tagihan: '#ef4444',
   pendidikan: '#06b6d4',
   kesehatan: '#10b981',
+  gaji: '#22c55e',
+  bonus: '#84cc16',
+  investasi: '#14b8a6',
+  pemasukan: '#0ea5e9',
   lainnya: '#64748b',
 };
 
@@ -17,6 +21,10 @@ export const CATEGORY_EMOJIS = {
   tagihan: '📱',
   pendidikan: '📚',
   kesehatan: '💊',
+  gaji: '💰',
+  bonus: '🎁',
+  investasi: '📈',
+  pemasukan: '💵',
   lainnya: '📦',
 };
 

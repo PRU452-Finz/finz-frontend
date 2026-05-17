@@ -10,6 +10,10 @@ export const CATEGORIES = [
   { value: 'tagihan', label: '📱 Tagihan', color: '#ef4444' },
   { value: 'pendidikan', label: '📚 Pendidikan', color: '#06b6d4' },
   { value: 'kesehatan', label: '💊 Kesehatan', color: '#10b981' },
+  { value: 'gaji', label: '💰 Gaji', color: '#22c55e' },
+  { value: 'bonus', label: '🎁 Bonus', color: '#84cc16' },
+  { value: 'investasi', label: '📈 Investasi', color: '#14b8a6' },
+  { value: 'pemasukan', label: '💵 Pemasukan Lain', color: '#0ea5e9' },
   { value: 'lainnya', label: '📦 Lainnya', color: '#64748b' },
 ];
 
