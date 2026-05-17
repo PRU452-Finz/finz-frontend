@@ -25,6 +25,7 @@ export default function AddTransaction() {
     date: new Date().toISOString().split('T')[0],
     payment_method: 'ewallet',
     description: '',
+    transaction_type: 'expense',
   });
 
   const [errors, setErrors] = useState({});
@@ -138,6 +139,34 @@ export default function AddTransaction() {
       {/* Form Card */}
       <Card>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Transaction Type Toggle */}
+          <div style={{ display: 'flex', gap: '8px', background: 'rgba(17, 24, 39, 0.6)', padding: '4px', borderRadius: '12px', border: '1px solid rgba(51, 65, 85, 0.5)' }}>
+            <button
+              type="button"
+              onClick={() => setForm(prev => ({ ...prev, transaction_type: 'expense' }))}
+              style={{
+                flex: 1, padding: '10px', borderRadius: '10px', fontSize: '14px', fontWeight: 600,
+                background: form.transaction_type === 'expense' ? '#10b981' : 'transparent',
+                color: form.transaction_type === 'expense' ? 'white' : '#64748b',
+                border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+              }}
+            >
+              Pengeluaran
+            </button>
+            <button
+              type="button"
+              onClick={() => setForm(prev => ({ ...prev, transaction_type: 'income', category: '' }))}
+              style={{
+                flex: 1, padding: '10px', borderRadius: '10px', fontSize: '14px', fontWeight: 600,
+                background: form.transaction_type === 'income' ? '#818cf8' : 'transparent',
+                color: form.transaction_type === 'income' ? 'white' : '#64748b',
+                border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+              }}
+            >
+              Pemasukan
+            </button>
+          </div>
+
           {/* Nominal */}
           <div>
             <label style={labelStyle}>
@@ -210,10 +239,22 @@ export default function AddTransaction() {
                   className="form-input form-select"
                   style={errors.category ? { borderColor: 'rgba(248, 113, 113, 0.5)' } : {}}
                 >
-                  <option value="">Pilih kategori</option>
-                  {CATEGORIES.map((c) => (
-                    <option key={c.value} value={c.value}>{c.label}</option>
-                  ))}
+                  {form.transaction_type === 'income' ? (
+                    <>
+                      <option value="">Pilih kategori pemasukan</option>
+                      <option value="gaji">Gaji</option>
+                      <option value="bonus">Bonus</option>
+                      <option value="investasi">Investasi</option>
+                      <option value="pemasukan">Lainnya</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="">Pilih kategori</option>
+                      {CATEGORIES.map((c) => (
+                        <option key={c.value} value={c.value}>{c.label}</option>
+                      ))}
+                    </>
+                  )}
                 </select>
                 <CaretDown size={14} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', pointerEvents: 'none' }} />
               </div>

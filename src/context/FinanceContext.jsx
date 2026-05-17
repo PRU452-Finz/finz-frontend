@@ -5,6 +5,7 @@ import {
   dashboardAPI,
   predictionAPI,
   recommendationAPI,
+  userAPI,
 } from '../services/api';
 
 // ═══════════ Context ═══════════
@@ -22,6 +23,8 @@ const ACTIONS = {
   SET_RECOMMENDATIONS: 'SET_RECOMMENDATIONS',
   SET_LOADING:         'SET_LOADING',
   SET_ERROR:           'SET_ERROR',
+  SET_PROFILE:         'SET_PROFILE',
+  SET_BUDGETS:         'SET_BUDGETS',
 };
 
 // ═══════════ Reducer ═══════════
@@ -51,6 +54,10 @@ function financeReducer(state, action) {
       return { ...state, financialScore: action.payload };
     case ACTIONS.SET_RECOMMENDATIONS:
       return { ...state, recommendations: action.payload };
+    case ACTIONS.SET_PROFILE:
+      return { ...state, profile: action.payload };
+    case ACTIONS.SET_BUDGETS:
+      return { ...state, budgets: action.payload };
     case ACTIONS.SET_LOADING:
       return { ...state, loading: action.payload };
     case ACTIONS.SET_ERROR:
@@ -67,6 +74,8 @@ const initialState = {
   prediction:     null,
   financialScore: null,
   recommendations: [],
+  profile:        null,
+  budgets:        [],
   loading:        true,
   error:          null,
 };
@@ -80,6 +89,7 @@ const initialState = {
  */
 const mapSummary = (data) => ({
   totalSpending:     data.total_spending,
+  totalIncome:       data.total_income,
   transactionCount:  data.transaction_count,
   avgDaily:          data.avg_daily,
   categoryBreakdown: data.category_breakdown,   // { makanan: 311000, ... }
@@ -120,7 +130,6 @@ export function FinanceProvider({ children }) {
   const [state, dispatch] = useReducer(financeReducer, initialState);
   const { user } = useAuth();
   const userId = user?.id || 1;
-  const userIncome = user?.monthly_income || 3_500_000;
 
   // ─── Fetch semua data saat pertama mount ─────────────────────────
   useEffect(() => {
@@ -130,19 +139,29 @@ export function FinanceProvider({ children }) {
         dispatch({ type: ACTIONS.SET_ERROR,   payload: null });
 
         // Semua fetch paralel agar lebih cepat
-        const [txnResp, dashResp, scoreResp, recResp, predResp] = await Promise.all([
+        const [txnResp, dashResp, scoreResp, recResp, profileResp, budgetResp] = await Promise.all([
           transactionAPI.getAll({ user_id: userId }),
           dashboardAPI.getSummary(userId),
           recommendationAPI.getScore(userId),
           recommendationAPI.getAll(userId),
-          predictionAPI.getBalance({ current_balance: userIncome, user_id: userId }),
+          userAPI.getProfile(userId),
+          userAPI.getBudgets(userId, new Date().toISOString().slice(0, 7)),
         ]);
 
+        const summary = mapSummary(dashResp.data);
+        const currentBalance = (summary.totalIncome || 0) - (summary.totalSpending || 0);
+        const safeBalance = Math.max(0, currentBalance);
+
+        // Panggil prediction dengan saldo asli
+        const predResp = await predictionAPI.getBalance({ current_balance: safeBalance, user_id: userId });
+
         dispatch({ type: ACTIONS.SET_TRANSACTIONS,    payload: txnResp.data   || [] });
-        dispatch({ type: ACTIONS.SET_SUMMARY,         payload: mapSummary(dashResp.data) });
+        dispatch({ type: ACTIONS.SET_SUMMARY,         payload: summary });
         dispatch({ type: ACTIONS.SET_FINANCIAL_SCORE, payload: mapFinancialScore(scoreResp.data) });
         dispatch({ type: ACTIONS.SET_RECOMMENDATIONS, payload: recResp.data   || [] });
         dispatch({ type: ACTIONS.SET_PREDICTION,      payload: mapPrediction(predResp.data) });
+        dispatch({ type: ACTIONS.SET_PROFILE,         payload: profileResp.data });
+        dispatch({ type: ACTIONS.SET_BUDGETS,         payload: budgetResp.data || [] });
 
       } catch (err) {
         console.error('[FinanceContext] Gagal fetch data:', err);
@@ -153,21 +172,23 @@ export function FinanceProvider({ children }) {
     }
 
     fetchAll();
-  }, [userId, userIncome]);
+  }, [userId]);
 
   // ─── Helper: re-fetch dashboard & prediction setelah CRUD ────────
   const refreshSummaryAndPrediction = useCallback(async () => {
     try {
-      const [dashResp, predResp] = await Promise.all([
-        dashboardAPI.getSummary(userId),
-        predictionAPI.getBalance({ current_balance: userIncome, user_id: userId }),
-      ]);
-      dispatch({ type: ACTIONS.SET_SUMMARY,    payload: mapSummary(dashResp.data) });
+      const dashResp = await dashboardAPI.getSummary(userId);
+      const summary = mapSummary(dashResp.data);
+      const currentBalance = (summary.totalIncome || 0) - (summary.totalSpending || 0);
+      
+      const predResp = await predictionAPI.getBalance({ current_balance: Math.max(0, currentBalance), user_id: userId });
+      
+      dispatch({ type: ACTIONS.SET_SUMMARY,    payload: summary });
       dispatch({ type: ACTIONS.SET_PREDICTION, payload: mapPrediction(predResp.data) });
     } catch (err) {
       console.error('[FinanceContext] Gagal refresh summary:', err);
     }
-  }, [userId, userIncome]);
+  }, [userId]);
 
   // ─── CRUD: Add ───────────────────────────────────────────────────
   const addTransaction = useCallback(async (formData) => {

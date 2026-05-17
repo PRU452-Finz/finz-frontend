@@ -236,8 +236,8 @@ export default function Transactions() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-                  <p className="txn-card-amount">
-                    -{formatCurrency(transaction.nominal)}
+                  <p className="txn-card-amount" style={{ color: transaction.transaction_type === 'income' ? '#10b981' : '#f87171' }}>
+                    {transaction.transaction_type === 'income' ? '+' : '-'}{formatCurrency(transaction.nominal)}
                   </p>
                   <button onClick={() => handleDelete(transaction.id)} style={{
                     padding: '6px', borderRadius: '6px', color: '#384770',

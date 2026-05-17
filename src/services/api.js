@@ -55,12 +55,6 @@ export const authAPI = {
   me:       ()     => api.get('/auth/me'),
 };
 
-// ═══════════ User API ═══════════
-export const userAPI = {
-  getProfile: (id)       => api.get(`/users/${id}`),
-  update:     (id, data) => api.put(`/users/${id}`, data),
-};
-
 // ═══════════ Transaction API ═══════════
 export const transactionAPI = {
   getAll:  (params = {}) => api.get('/transactions', { params }),
@@ -68,6 +62,19 @@ export const transactionAPI = {
   create:  (data)        => api.post('/transactions', data),
   update:  (id, data)    => api.put(`/transactions/${id}`, data),
   delete:  (id)          => api.delete(`/transactions/${id}`),
+};
+
+// ═══════════ Dashboard API ═══════════
+export const dashboardAPI = {
+  getSummary: (userId = 1) => api.get(`/dashboard?user_id=${userId}`),
+};
+
+// ═══════════ User API ═══════════
+export const userAPI = {
+  getProfile: (id) => api.get(`/users/${id}`),
+  updateProfile: (id, data) => api.put(`/users/${id}`, data),
+  getBudgets: (id, month) => api.get(`/users/${id}/budgets${month ? `?month=${month}` : ''}`),
+  upsertBudget: (id, data) => api.post(`/users/${id}/budgets`, data),
 };
 
 // ═══════════ Budget API ═══════════
@@ -82,17 +89,13 @@ export const budgetAlertAPI = {
   getAlerts: (userId, month) => api.get(`/budget-alert/${userId}`, { params: { month } }),
 };
 
-// ═══════════ Dashboard API ═══════════
-export const dashboardAPI = {
-  getSummary: (userId = 1) => api.get(`/dashboard?user_id=${userId}`),
-};
-
 // ═══════════ AI / Prediction API ═══════════
 export const predictionAPI = {
   getBalance:  (data)        => api.post('/predict/balance', data),
   getCategory: (description) => api.post('/predict/category', { description }),
 };
 
+// ═══════════ Recommendation API ═══════════
 export const recommendationAPI = {
   getAll:   (userId) => api.get(`/recommendation/${userId}`),
   getScore: (userId) => api.get(`/financial-score/${userId}`),

@@ -9,6 +9,9 @@ import {
   SignOut,
   X,
   Lightning,
+  ChartPieSlice,
+  Brain,
+  User,
 } from '@phosphor-icons/react';
 
 const navLinks = [
