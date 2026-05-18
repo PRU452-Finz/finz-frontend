@@ -5,6 +5,7 @@ import {
   Lightning, User, EnvelopeSimple, Lock, Eye, EyeSlash,
   CurrencyDollar, GraduationCap, Target, CaretDown, ArrowRight,
 } from '@phosphor-icons/react';
+import logoFinz from '../assets/logoFinz.png';
 
 const OCCUPATIONS = [
   { value: 'mahasiswa', label: 'Mahasiswa' },
@@ -91,14 +92,7 @@ export default function Register() {
       <div className="animate-fade-in-up" style={{ width: '100%', maxWidth: '480px', position: 'relative', zIndex: 1 }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{
-            width: '56px', height: '56px', borderRadius: '16px',
-            background: 'linear-gradient(135deg, #10b981, #059669)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 16px', boxShadow: '0 0 30px rgba(16,185,129,0.3)',
-          }}>
-            <Lightning size={28} weight="fill" color="white" />
-          </div>
+          <img src={logoFinz} alt="FinZ Logo" style={{ width: '56px', height: '56px', borderRadius: '16px', margin: '0 auto 16px', display: 'block', objectFit: 'contain' }} />
           <h1 className="gradient-text" style={{ fontSize: '28px', fontWeight: 800 }}>Buat Akun FinZ</h1>
           <p style={{ fontSize: '14px', color: '#5a6d99', marginTop: '8px' }}>Mulai kelola keuanganmu dengan cerdas</p>
         </div>

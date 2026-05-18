@@ -12,6 +12,7 @@ import Transactions from './pages/Transactions';
 import AddTransaction from './pages/AddTransaction';
 import Budget from './pages/Budget';
 import Profile from './pages/Profile';
+import LandingPage from './pages/LandingPage';
 
 function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -30,7 +31,7 @@ function AppLayout() {
           {/* Page Content */}
           <main className="main-content">
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/add" element={<AddTransaction />} />
               <Route path="/budget" element={<Budget />} />
@@ -55,6 +56,9 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Landing Page */}
+          <Route path="/" element={<LandingPage />} />
+
           {/* Auth pages — no sidebar/navbar */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
