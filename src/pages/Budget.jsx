@@ -78,9 +78,18 @@ export default function Budget() {
     }
   };
 
-  // Build spending map from alerts
+  // Build spending map from backend data
   const spentMap = {};
-  alerts.forEach((a) => { spentMap[a.category] = a.spent; });
+  budgets.forEach((b) => { 
+    if (b.spent !== undefined) {
+      spentMap[b.category] = b.spent; 
+    }
+  });
+
+  // Fallback to alerts if backend spent isn't available (keep existing logic)
+  if (Object.keys(spentMap).length === 0) {
+    alerts.forEach((a) => { spentMap[a.category] = a.spent; });
+  }
 
   const getProgressColor = (pct) => {
     if (pct >= 100) return '#ef4444';

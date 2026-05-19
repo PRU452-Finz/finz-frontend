@@ -15,7 +15,7 @@ import {
 } from '@phosphor-icons/react';
 
 const navLinks = [
-  { to: '/', label: 'Dashboard', icon: House },
+  { to: '/dashboard', label: 'Dashboard', icon: House },
   { to: '/transactions', label: 'Transaksi', icon: Receipt },
   { to: '/add', label: 'Tambah', icon: PlusCircle },
   { to: '/budget', label: 'Budget', icon: Wallet },

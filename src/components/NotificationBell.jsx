@@ -125,7 +125,7 @@ export default function NotificationBell() {
             <div>
               {alerts.map((alert, i) => {
                 const isExceeded = alert.status === 'exceeded';
-                const isWarning = alert.percentage >= 80;
+                const isWarning = alert.status === 'warning' || alert.percentage >= 80;
                 const color = isExceeded ? '#ef4444' : isWarning ? '#f59e0b' : '#10b981';
 
                 return (
@@ -139,7 +139,7 @@ export default function NotificationBell() {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span style={{ fontSize: '18px' }}>
-                        {CATEGORY_EMOJIS[alert.category] || '📦'}
+                        {alert.is_ai ? '🤖' : (CATEGORY_EMOJIS[alert.category] || '📦')}
                       </span>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -153,35 +153,42 @@ export default function NotificationBell() {
                             <Warning size={12} color={color} weight="fill" />
                           )}
                         </div>
-                        <p style={{ fontSize: '11px', color: '#5a6d99', marginTop: '2px' }}>
-                          {isExceeded
-                            ? `Melebihi budget! ${alert.percentage}% terpakai`
-                            : isWarning
-                            ? `Hampir penuh — ${alert.percentage}% terpakai`
-                            : `${alert.percentage}% terpakai — masih aman`
+                        <p style={{ fontSize: '11px', color: '#8b9cc4', marginTop: '2px', lineHeight: '1.4' }}>
+                          {alert.is_ai 
+                            ? alert.message 
+                            : (isExceeded
+                              ? `Melebihi budget! ${alert.percentage}% terpakai`
+                              : isWarning
+                              ? `Hampir penuh — ${alert.percentage}% terpakai`
+                              : `${alert.percentage}% terpakai — masih aman`
+                            )
                           }
                         </p>
                       </div>
-                      <span style={{
-                        padding: '2px 8px', borderRadius: '6px',
-                        fontSize: '10px', fontWeight: 700,
-                        background: `${color}15`, color,
-                      }}>
-                        {alert.percentage}%
-                      </span>
+                      {!alert.is_ai && (
+                        <span style={{
+                          padding: '2px 8px', borderRadius: '6px',
+                          fontSize: '10px', fontWeight: 700,
+                          background: `${color}15`, color,
+                        }}>
+                          {alert.percentage}%
+                        </span>
+                      )}
                     </div>
-                    {/* Mini progress bar */}
-                    <div style={{
-                      marginTop: '8px', height: '4px', borderRadius: '999px',
-                      background: '#151d35', overflow: 'hidden',
-                    }}>
+                    {/* Mini progress bar - Hide for AI insight with no percentage */}
+                    {!alert.is_ai && (
                       <div style={{
-                        height: '100%', borderRadius: '999px',
-                        background: color,
-                        width: `${Math.min(alert.percentage, 100)}%`,
-                        transition: 'width 0.5s ease',
-                      }} />
-                    </div>
+                        marginTop: '8px', height: '4px', borderRadius: '999px',
+                        background: '#151d35', overflow: 'hidden',
+                      }}>
+                        <div style={{
+                          height: '100%', borderRadius: '999px',
+                          background: color,
+                          width: `${Math.min(alert.percentage, 100)}%`,
+                          transition: 'width 0.5s ease',
+                        }} />
+                      </div>
+                    )}
                   </div>
                 );
               })}

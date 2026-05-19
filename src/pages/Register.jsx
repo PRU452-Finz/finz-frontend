@@ -63,7 +63,7 @@ export default function Register() {
         occupation: form.occupation,
         financial_goal: form.financial_goal,
       });
-      navigate('/', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setError(err.message || 'Registrasi gagal. Coba lagi.');
     } finally {
