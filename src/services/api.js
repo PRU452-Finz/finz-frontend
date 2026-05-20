@@ -81,7 +81,7 @@ export const userAPI = {
 export const budgetAPI = {
   getAll:         (userId, month) => api.get(`/users/${userId}/budgets`, { params: { month } }),
   createOrUpdate: (data)          => api.post(`/users/${data.user_id}/budgets`, data),
-  delete:         (id)            => api.delete(`/users/${id}/budgets`),
+  delete:         (userId, budgetId) => api.delete(`/users/${userId}/budgets/${budgetId}`),
 };
 
 // ═══════════ Budget Alert API ═══════════

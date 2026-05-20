@@ -71,7 +71,7 @@ export default function Budget() {
 
   const handleDelete = async (id) => {
     try {
-      await budgetAPI.delete(id);
+      await budgetAPI.delete(userId, id);
       await fetchData();
     } catch (err) {
       setError(err.message || 'Gagal menghapus budget');
@@ -139,10 +139,10 @@ export default function Budget() {
         </div>
       </div>
 
-      {/* Alert Banner */}
-      {alerts.length > 0 && (
+      {/* Alert Banner — Standard Budget Alerts */}
+      {alerts.filter(a => !a.is_ai).length > 0 && (
         <div className="glass-card animate-fade-in-up" style={{
-          marginBottom: '20px', padding: '16px 20px',
+          marginBottom: '12px', padding: '16px 20px',
           borderLeft: '4px solid #f59e0b', background: 'linear-gradient(145deg, rgba(245,158,11,0.05), rgba(10,14,26,0.95))',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
@@ -150,7 +150,7 @@ export default function Budget() {
             <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>Budget Alert!</h3>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {alerts.map((a) => (
+            {alerts.filter(a => !a.is_ai).map((a) => (
               <span key={a.category} style={{
                 padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600,
                 background: a.status === 'exceeded' ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)',
@@ -159,6 +159,35 @@ export default function Budget() {
               }}>
                 {CATEGORY_EMOJIS[a.category]} {a.category}: {a.percentage}%
               </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Alert Banner — AI Insights */}
+      {alerts.filter(a => a.is_ai).length > 0 && (
+        <div className="glass-card animate-fade-in-up" style={{
+          marginBottom: '12px', padding: '16px 20px',
+          borderLeft: '4px solid #a78bfa', background: 'linear-gradient(145deg, rgba(167,139,250,0.05), rgba(10,14,26,0.95))',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+            <span style={{ fontSize: '16px' }}>🤖</span>
+            <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>AI Insight</h3>
+            <span style={{
+              padding: '2px 8px', borderRadius: '4px', fontSize: '9px', fontWeight: 700,
+              background: 'rgba(167,139,250,0.15)', color: '#a78bfa', letterSpacing: '0.5px',
+            }}>AI-POWERED</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {alerts.filter(a => a.is_ai).map((a, i) => (
+              <div key={i} style={{
+                padding: '8px 12px', borderRadius: '8px', fontSize: '12px', lineHeight: 1.5,
+                background: a.status === 'exceeded' ? 'rgba(239,68,68,0.08)' : 'rgba(245,158,11,0.08)',
+                color: a.status === 'exceeded' ? '#fca5a5' : '#fde68a',
+                borderLeft: `3px solid ${a.status === 'exceeded' ? '#ef4444' : '#f59e0b'}`,
+              }}>
+                {a.message}
+              </div>
             ))}
           </div>
         </div>
