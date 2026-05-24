@@ -23,6 +23,7 @@ export default function Profile() {
     name: '',
     email: '',
     monthly_income: '',
+    initial_balance: '',
     occupation: 'karyawan',
     financial_goal: 'dana_darurat',
     risk_profile: 'konservatif',
@@ -38,6 +39,7 @@ export default function Profile() {
         name: profile.name || '',
         email: profile.email || '',
         monthly_income: profile.monthly_income || '',
+        initial_balance: profile.initial_balance || '',
         occupation: profile.occupation || 'karyawan',
         financial_goal: profile.financial_goal || 'dana_darurat',
         risk_profile: profile.risk_profile || 'konservatif',
@@ -70,6 +72,7 @@ export default function Profile() {
       await userAPI.updateProfile(userId, {
         ...profileForm,
         monthly_income: Number(profileForm.monthly_income),
+        initial_balance: Number(profileForm.initial_balance || 0),
       });
       setMessage({ text: 'Profil berhasil diperbarui!', type: 'success' });
     } catch (err) {
@@ -127,7 +130,7 @@ export default function Profile() {
         </div>
       )}
 
-      <div className="dash-grid-2-1" style={{ gridTemplateColumns: '1.5fr 1fr', gap: '24px' }}>
+      <div className="dash-grid-2-1" style={{ gap: '24px' }}>
         {/* Left Column: Profile Form */}
         <Card title="Profil Finansial" subtitle="Sesuaikan data diri untuk kalibrasi AI">
           <form onSubmit={handleSubmitProfile} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -173,6 +176,23 @@ export default function Profile() {
                 onChange={handleProfileChange}
                 className="form-input"
                 placeholder="Contoh: 5000000"
+                style={{ fontSize: '16px', fontWeight: 600 }}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>
+                <CurrencyDollar size={16} color="#818cf8" />
+                Saldo Awal (Rp)
+              </label>
+              <input
+                type="number"
+                name="initial_balance"
+                value={profileForm.initial_balance}
+                onChange={handleProfileChange}
+                className="form-input"
+                placeholder="Contoh: 2000000"
+                min="0"
                 style={{ fontSize: '16px', fontWeight: 600 }}
               />
             </div>
@@ -233,22 +253,25 @@ export default function Profile() {
               </select>
             </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="btn-primary"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '14px',
-                marginTop: '10px',
-              }}
-            >
-              <FloppyDisk size={18} weight="bold" />
-              {isSubmitting ? 'Menyimpan...' : 'Simpan Profil'}
-            </button>
+            <div>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="btn-primary"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '14px',
+                  marginTop: '10px',
+                  width: '100%',
+                }}
+              >
+                <FloppyDisk size={18} weight="bold" />
+                {isSubmitting ? 'Menyimpan...' : 'Simpan Profil'}
+              </button>
+            </div>
           </form>
         </Card>
 

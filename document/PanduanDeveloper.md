@@ -27,6 +27,7 @@ Panduan setup dan pengembangan untuk tim developer FinZ.
 - **Node.js** v18+ dan npm
 - **Python** 3.10+ dan pip
 - **MySQL** 8.0+
+- **Redis** (Untuk *caching* & *rate limiting*)
 - **Git**
 
 ---
@@ -97,6 +98,8 @@ DB_PORT=3306
 DB_NAME=finz_db
 DB_USER=finz
 DB_PASSWORD=finz123
+REDIS_HOST=localhost
+REDIS_PORT=6379
 CLIENT_URL=http://localhost:5173
 AI_API_URL=http://localhost:5000
 JWT_SECRET=finz-super-secret-key-2026-pru452
@@ -107,10 +110,20 @@ mysql -u root -e "CREATE DATABASE IF NOT EXISTS finz_db;"
 mysql -u root -e "CREATE USER IF NOT EXISTS 'finz'@'localhost' IDENTIFIED BY 'finz123';"
 mysql -u root -e "GRANT ALL PRIVILEGES ON finz_db.* TO 'finz'@'localhost';"
 
-# 5. Jalankan seeder (opsional, untuk data dummy)
+# 5. Pastikan Redis Berjalan
+# Jika menggunakan Fedora/CentOS/RHEL:
+# sudo dnf install redis
+# sudo systemctl enable --now redis
+# Jika menggunakan Linux (Ubuntu/Debian):
+# sudo apt install redis-server
+# sudo systemctl enable --now redis-server
+# Atau menggunakan Docker:
+# docker run --name finz-redis -p 6379:6379 -d redis
+
+# 6. Jalankan seeder (opsional, untuk data dummy)
 npm run seed
 
-# 6. Jalankan dev server
+# 7. Jalankan dev server
 npm run dev
 ```
 
@@ -262,6 +275,8 @@ DB_PORT=3306
 DB_NAME=finz_db
 DB_USER=finz
 DB_PASSWORD=finz123
+REDIS_HOST=localhost
+REDIS_PORT=6379
 CLIENT_URL=http://localhost:5173
 AI_API_URL=http://localhost:5000
 JWT_SECRET=<your-secret>
@@ -275,6 +290,7 @@ JWT_EXPIRES_IN=7d
 | Masalah | Solusi |
 |---------|--------|
 | CORS error | Pastikan `CLIENT_URL` di backend `.env` sesuai dengan URL frontend |
+| Redis error / ECONNREFUSED | Pastikan Redis Server sudah diinstal dan berjalan di port 6379 |
 | AI alerts kosong | Pastikan AI server (port 5000) aktif, cek dengan `curl localhost:5000/health` |
 | Database error | Pastikan MySQL berjalan dan kredensial di `.env` benar |
 | JWT expired | Login ulang. Token berlaku 7 hari |

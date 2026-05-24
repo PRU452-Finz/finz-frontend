@@ -6,7 +6,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 30000,
 });
 
 // Request interceptor — attach JWT token
@@ -99,4 +99,9 @@ export const predictionAPI = {
 export const recommendationAPI = {
   getAll:   (userId) => api.get(`/recommendation/${userId}`),
   getScore: (userId) => api.get(`/financial-score/${userId}`),
+};
+
+// ═══════════ Chat API ═══════════
+export const chatAPI = {
+  ask: (message, history = []) => api.post('/chat/ask', { message, history }),
 };

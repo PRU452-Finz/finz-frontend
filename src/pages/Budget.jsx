@@ -139,31 +139,6 @@ export default function Budget() {
         </div>
       </div>
 
-      {/* Alert Banner — Standard Budget Alerts */}
-      {alerts.filter(a => !a.is_ai).length > 0 && (
-        <div className="glass-card animate-fade-in-up" style={{
-          marginBottom: '12px', padding: '16px 20px',
-          borderLeft: '4px solid #f59e0b', background: 'linear-gradient(145deg, rgba(245,158,11,0.05), rgba(10,14,26,0.95))',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <Warning size={18} color="#f59e0b" weight="fill" />
-            <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>Budget Alert!</h3>
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {alerts.filter(a => !a.is_ai).map((a) => (
-              <span key={a.category} style={{
-                padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600,
-                background: a.status === 'exceeded' ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)',
-                color: a.status === 'exceeded' ? '#f87171' : '#fbbf24',
-                textTransform: 'capitalize',
-              }}>
-                {CATEGORY_EMOJIS[a.category]} {a.category}: {a.percentage}%
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Alert Banner — AI Insights */}
       {alerts.filter(a => a.is_ai).length > 0 && (
         <div className="glass-card animate-fade-in-up" style={{

@@ -54,7 +54,7 @@ export default function Transactions() {
   const startItem = (safePage - 1) * PER_PAGE + 1;
   const endItem = Math.min(safePage * PER_PAGE, sortedTransactions.length);
 
-  const totalFiltered = filteredTransactions.reduce((sum, t) => sum + t.nominal, 0);
+  const totalFiltered = filteredTransactions.reduce((sum, t) => sum + (t.nominal || t.amount || 0), 0);
 
   const handleDelete = async (id) => {
     setDeletingId(id);
@@ -220,7 +220,7 @@ export default function Transactions() {
                   {CATEGORY_EMOJIS[transaction.category]}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: '14px', fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: 'white', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', lineHeight: 1.3, marginBottom: '4px' }}>
                     {transaction.description}
                   </p>
                   <div className="txn-card-meta">
@@ -238,22 +238,24 @@ export default function Transactions() {
                     <span className="txn-card-method" style={{ textTransform: 'capitalize' }}>{transaction.payment_method}</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-                  <p className="txn-card-amount" style={{ color: transaction.transaction_type === 'income' ? '#10b981' : '#f87171' }}>
-                    {transaction.transaction_type === 'income' ? '+' : '-'}{formatCurrency(transaction.nominal)}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px', flexShrink: 0 }}>
+                  <p className="txn-card-amount" style={{ color: transaction.transaction_type === 'income' ? '#10b981' : '#f87171', fontSize: '15px', fontWeight: 'bold' }}>
+                    {transaction.transaction_type === 'income' ? '+' : '-'}{formatCurrency(transaction.nominal || transaction.amount)}
                   </p>
-                  <button onClick={() => setEditingTransaction(transaction)} style={{
-                    padding: '6px', borderRadius: '6px', color: '#384770',
-                    background: 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s',
-                  }} title="Edit">
-                    <PencilSimple size={15} />
-                  </button>
-                  <button onClick={() => handleDelete(transaction.id)} style={{
-                    padding: '6px', borderRadius: '6px', color: '#384770',
-                    background: 'none', border: 'none', cursor: 'pointer', transition: 'all 0.2s',
-                  }} title="Hapus">
-                    <Trash size={15} />
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <button onClick={() => setEditingTransaction(transaction)} style={{
+                      padding: '6px', borderRadius: '8px', color: '#10b981',
+                      background: 'rgba(16, 185, 129, 0.1)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }} title="Edit">
+                      <PencilSimple size={14} weight="bold" />
+                    </button>
+                    <button onClick={() => handleDelete(transaction.id)} style={{
+                      padding: '6px', borderRadius: '8px', color: '#f87171',
+                      background: 'rgba(248, 113, 113, 0.1)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }} title="Hapus">
+                      <Trash size={14} weight="bold" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

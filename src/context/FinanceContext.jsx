@@ -146,7 +146,7 @@ export function FinanceProvider({ children }) {
         // Semua fetch paralel agar lebih cepat
         // Backend sekarang baca user_id dari JWT token
         const [txnResp, dashResp, scoreResp, recResp, profileResp, budgetResp] = await Promise.all([
-          transactionAPI.getAll(),
+          transactionAPI.getAll({ limit: 9999 }),
           dashboardAPI.getSummary(),
           recommendationAPI.getScore(userId),
           recommendationAPI.getAll(userId),

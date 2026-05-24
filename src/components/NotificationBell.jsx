@@ -49,8 +49,10 @@ export default function NotificationBell() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const unreadCount = alerts.filter((a) => !a.is_read).length;
-  const hasWarnings = alerts.some((a) => a.status === 'exceeded' || a.percentage >= 80);
+  // Hanya tampilkan notifikasi yang dihasilkan oleh AI
+  const displayAlerts = alerts.filter((a) => a.is_ai);
+  const unreadCount = displayAlerts.filter((a) => !a.is_read).length;
+  const hasWarnings = displayAlerts.some((a) => a.status === 'exceeded' || a.status === 'warning');
 
   return (
     <div ref={dropdownRef} style={{ position: 'relative' }}>
@@ -113,19 +115,19 @@ export default function NotificationBell() {
                 borderRadius: '50%', animation: 'spin 0.8s linear infinite',
               }} />
             </div>
-          ) : alerts.length === 0 ? (
+          ) : displayAlerts.length === 0 ? (
             <div style={{ padding: '32px 16px', textAlign: 'center' }}>
               <CheckCircle size={32} color="#10b981" weight="duotone" style={{ marginBottom: '8px' }} />
               <p style={{ fontSize: '13px', color: '#8b9cc4' }}>Semua budget aman!</p>
               <p style={{ fontSize: '11px', color: '#5a6d99', marginTop: '4px' }}>
-                Tidak ada peringatan bulan ini
+                Tidak ada peringatan AI bulan ini
               </p>
             </div>
           ) : (
             <div>
-              {alerts.map((alert, i) => {
+              {displayAlerts.map((alert, i) => {
                 const isExceeded = alert.status === 'exceeded';
-                const isWarning = alert.status === 'warning' || alert.percentage >= 80;
+                const isWarning = alert.status === 'warning';
                 const color = isExceeded ? '#ef4444' : isWarning ? '#f59e0b' : '#10b981';
 
                 return (
@@ -138,9 +140,13 @@ export default function NotificationBell() {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ fontSize: '18px' }}>
-                        {alert.is_ai ? '🤖' : (CATEGORY_EMOJIS[alert.category] || '📦')}
-                      </span>
+                      <div style={{
+                        width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0,
+                        background: 'rgba(167,139,250,0.1)', color: '#a78bfa',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px'
+                      }}>
+                        🤖
+                      </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                           <p style={{
@@ -153,42 +159,11 @@ export default function NotificationBell() {
                             <Warning size={12} color={color} weight="fill" />
                           )}
                         </div>
-                        <p style={{ fontSize: '11px', color: '#8b9cc4', marginTop: '2px', lineHeight: '1.4' }}>
-                          {alert.is_ai 
-                            ? alert.message 
-                            : (isExceeded
-                              ? `Melebihi budget! ${alert.percentage}% terpakai`
-                              : isWarning
-                              ? `Hampir penuh — ${alert.percentage}% terpakai`
-                              : `${alert.percentage}% terpakai — masih aman`
-                            )
-                          }
+                        <p style={{ fontSize: '11px', color: '#8b9cc4', marginTop: '4px', lineHeight: '1.5' }}>
+                          {alert.message}
                         </p>
                       </div>
-                      {!alert.is_ai && (
-                        <span style={{
-                          padding: '2px 8px', borderRadius: '6px',
-                          fontSize: '10px', fontWeight: 700,
-                          background: `${color}15`, color,
-                        }}>
-                          {alert.percentage}%
-                        </span>
-                      )}
                     </div>
-                    {/* Mini progress bar - Hide for AI insight with no percentage */}
-                    {!alert.is_ai && (
-                      <div style={{
-                        marginTop: '8px', height: '4px', borderRadius: '999px',
-                        background: '#151d35', overflow: 'hidden',
-                      }}>
-                        <div style={{
-                          height: '100%', borderRadius: '999px',
-                          background: color,
-                          width: `${Math.min(alert.percentage, 100)}%`,
-                          transition: 'width 0.5s ease',
-                        }} />
-                      </div>
-                    )}
                   </div>
                 );
               })}
