@@ -143,13 +143,10 @@ export function FinanceProvider({ children }) {
         dispatch({ type: ACTIONS.SET_LOADING, payload: true });
         dispatch({ type: ACTIONS.SET_ERROR,   payload: null });
 
-        // Semua fetch paralel agar lebih cepat
-        // Backend sekarang baca user_id dari JWT token
-        const [txnResp, dashResp, scoreResp, recResp, profileResp, budgetResp] = await Promise.all([
+        // 1. Fetch Core Data (Cepat - Database Langsung)
+        const [txnResp, dashResp, profileResp, budgetResp] = await Promise.all([
           transactionAPI.getAll({ limit: 9999 }),
           dashboardAPI.getSummary(),
-          recommendationAPI.getScore(userId),
-          recommendationAPI.getAll(userId),
           userAPI.getProfile(userId),
           userAPI.getBudgets(userId, new Date().toISOString().slice(0, 7)),
         ]);
@@ -158,21 +155,31 @@ export function FinanceProvider({ children }) {
         const currentBalance = (summary.totalIncome || 0) - (summary.totalSpending || 0);
         const safeBalance = Math.max(0, currentBalance);
 
-        // Panggil prediction dengan saldo asli
-        const predResp = await predictionAPI.getBalance({ current_balance: safeBalance });
-
+        // Render dashboard SECARA INSTAN!
         dispatch({ type: ACTIONS.SET_TRANSACTIONS,    payload: txnResp.data   || [] });
         dispatch({ type: ACTIONS.SET_SUMMARY,         payload: summary });
-        dispatch({ type: ACTIONS.SET_FINANCIAL_SCORE, payload: mapFinancialScore(scoreResp.data) });
-        dispatch({ type: ACTIONS.SET_RECOMMENDATIONS, payload: recResp.data   || [] });
-        dispatch({ type: ACTIONS.SET_PREDICTION,      payload: mapPrediction(predResp.data) });
         dispatch({ type: ACTIONS.SET_PROFILE,         payload: profileResp.data });
         dispatch({ type: ACTIONS.SET_BUDGETS,         payload: budgetResp.data || [] });
+        
+        // Matikan loading screen agar user tidak menunggu AI
+        dispatch({ type: ACTIONS.SET_LOADING, payload: false });
+
+        // 2. Fetch AI Data (Lambat - Background Fetch)
+        Promise.all([
+          recommendationAPI.getScore(userId),
+          recommendationAPI.getAll(userId),
+          predictionAPI.getBalance({ current_balance: safeBalance })
+        ]).then(([scoreResp, recResp, predResp]) => {
+          dispatch({ type: ACTIONS.SET_FINANCIAL_SCORE, payload: mapFinancialScore(scoreResp.data) });
+          dispatch({ type: ACTIONS.SET_RECOMMENDATIONS, payload: recResp.data   || [] });
+          dispatch({ type: ACTIONS.SET_PREDICTION,      payload: mapPrediction(predResp.data) });
+        }).catch(err => {
+          console.error('[FinanceContext] Gagal fetch AI data secara background:', err);
+        });
 
       } catch (err) {
-        console.error('[FinanceContext] Gagal fetch data:', err);
+        console.error('[FinanceContext] Gagal fetch data inti:', err);
         dispatch({ type: ACTIONS.SET_ERROR, payload: err.message || 'Gagal memuat data' });
-      } finally {
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });
       }
     }
