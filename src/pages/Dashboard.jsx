@@ -49,15 +49,17 @@ export default function Dashboard() {
     );
   }
 
-  if (!summary || !prediction || !financialScore) return null;
+  if (!summary) return null;
 
   const recentTransactions = [...transactions]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 5);
 
+  const currentBalance = (summary?.totalIncome || 0) - (summary?.totalSpending || 0);
+
   const getScoreColor = (s) => s >= 80 ? '#10b981' : s >= 60 ? '#34d399' : s >= 40 ? '#fbbf24' : '#f87171';
   const getScoreLabel = (s) => s >= 80 ? 'Sangat Baik' : s >= 60 ? 'Cukup Baik' : s >= 40 ? 'Perlu Perbaikan' : 'Kurang Baik';
-  const scoreColor = getScoreColor(financialScore.score);
+  const scoreColor = financialScore ? getScoreColor(financialScore.score) : '#5a6d99';
   const getRecIcon = (type) => {
     if (type === 'warning') return <Warning size={16} color="#fbbf24" weight="fill" />;
     if (type === 'important') return <ShieldCheck size={16} color="#f87171" weight="fill" />;
@@ -65,11 +67,11 @@ export default function Dashboard() {
   };
   const getRecBorder = (type) => type === 'warning' ? '#fbbf24' : type === 'important' ? '#f87171' : '#34d399';
 
-  const balancePercent = prediction.current_balance > 0
+  const balancePercent = prediction && prediction.current_balance > 0
     ? Math.min(Math.round((prediction.predicted_end_balance / prediction.current_balance) * 100), 100)
     : 0;
 
-  const balanceDash = prediction.current_balance > 0
+  const balanceDash = prediction && prediction.current_balance > 0
     ? Math.min((prediction.predicted_end_balance / prediction.current_balance) * 251, 251)
     : 0;
 
@@ -80,7 +82,7 @@ export default function Dashboard() {
         {/* Hero Balance Card */}
         <div className="hero-balance">
           <p className="hero-label">Total Saldo</p>
-          <p className="hero-amount">{formatCurrency(prediction.current_balance)}</p>
+          <p className="hero-amount">{formatCurrency(currentBalance)}</p>
 
           {/* Progress Bar */}
           <div className="hero-progress-track">
@@ -93,7 +95,11 @@ export default function Dashboard() {
               <ChartLine size={16} color="#34d399" weight="duotone" />
               <span className="hero-pred-label">Prediksi Akhir Bulan</span>
             </div>
-            <span className="hero-pred-amount">{formatCurrency(prediction.predicted_end_balance)}</span>
+            {prediction ? (
+              <span className="hero-pred-amount">{formatCurrency(prediction.predicted_end_balance)}</span>
+            ) : (
+              <span className="hero-pred-amount" style={{ fontSize: '11px', color: '#94a3b8' }}>AI menganalisa...</span>
+            )}
           </div>
         </div>
 
@@ -104,8 +110,21 @@ export default function Dashboard() {
               <TrendUp size={20} color="#34d399" weight="duotone" />
             </div>
             <div>
-              <p className="summary-card-label">Pemasukan</p>
-              <p className="summary-card-amount">{formatCurrency(summary.totalIncome)}</p>
+              <div className="insight-score-circle" style={{ '--score-color': scoreColor, border: `4px solid ${scoreColor}` }}>
+                {financialScore ? (
+                  <span className="insight-score-value">{financialScore.score}</span>
+                ) : (
+                  <span className="insight-score-value" style={{ fontSize: '16px' }}>--</span>
+                )}
+              </div>
+            </div>
+            <div className="insight-score-info">
+              <p className="insight-score-status" style={{ color: scoreColor }}>
+                {financialScore ? getScoreLabel(financialScore.score) : 'Menganalisa...'}
+              </p>
+              <p className="insight-score-desc">
+                {financialScore ? 'Skor finansial berdasarkan aktivitas Anda bulan ini.' : 'AI sedang menilai kebiasaan finansial Anda.'}
+              </p>
             </div>
           </div>
           <div className="summary-card">
@@ -120,7 +139,7 @@ export default function Dashboard() {
         </div>
 
         {/* Budget Alert */}
-        {prediction.message && (
+        {prediction?.message && (
           <div className="mobile-alert">
             <Lightning size={18} color="#10b981" weight="fill" className="mobile-alert-icon" />
             <div>
@@ -185,7 +204,7 @@ export default function Dashboard() {
     );
   }
 
-  // ═══════════ DESKTOP LAYOUT (unchanged) ═══════════
+  // ═══════════ DESKTOP LAYOUT ═══════════
   return (
     <div className="animate-fade-in">
       <div style={{ marginBottom: '24px' }}>
@@ -209,7 +228,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#34d399' }}>{balancePercent}%</span>
               </div>
             </div>
-            <p className="stat-value" style={{ lineHeight: 1 }}>{formatCurrency(prediction.current_balance)}</p>
+            <p className="stat-value" style={{ lineHeight: 1 }}>{formatCurrency(prediction ? prediction.current_balance : currentBalance)}</p>
           </div>
         </div>
 
@@ -242,7 +261,7 @@ export default function Dashboard() {
             <p className="stat-label">Prediksi Sisa</p>
             <div style={{ padding: '8px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)' }}><ChartLine size={18} color="#34d399" weight="duotone" /></div>
           </div>
-          <p className="stat-value" style={{ marginBottom: '8px' }}>{formatCurrency(prediction.predicted_end_balance)}</p>
+          <p className="stat-value" style={{ marginBottom: '8px' }}>{prediction ? formatCurrency(prediction.predicted_end_balance) : '--'}</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <TrendUp size={14} color="#34d399" />
             <span style={{ fontSize: '12px', color: '#34d399' }}>Saldo di Akhir Bulan</span>
@@ -255,8 +274,8 @@ export default function Dashboard() {
           <DailyLineChart data={summary.dailyBreakdown} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px', paddingTop: '14px', borderTop: '1px solid rgba(21, 29, 53, 0.8)', flexWrap: 'wrap' }}>
             <Sparkle size={16} color="#a78bfa" weight="fill" />
-            <p style={{ fontSize: '12px', color: '#5a6d99' }}>AI prediksi saldo akhir: <span style={{ color: '#34d399', fontWeight: 600 }}>{formatCurrency(prediction.predicted_end_balance)}</span></p>
-            <Badge status={prediction.status} size="sm" />
+            <p style={{ fontSize: '12px', color: '#5a6d99' }}>AI prediksi saldo akhir: <span style={{ color: '#34d399', fontWeight: 600 }}>{prediction ? formatCurrency(prediction.predicted_end_balance) : 'Menganalisa...'}</span></p>
+            {prediction && <Badge status={prediction.status} size="sm" />}
           </div>
         </Card>
 
@@ -266,16 +285,18 @@ export default function Dashboard() {
             <div style={{ position: 'relative', width: '110px', height: '110px', marginBottom: '12px' }}>
               <svg viewBox="0 0 120 120" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
                 <circle cx="60" cy="60" r="50" fill="none" stroke="#151d35" strokeWidth="8" />
-                <circle cx="60" cy="60" r="50" fill="none" stroke={scoreColor} strokeWidth="8" strokeLinecap="round" strokeDasharray={`${(financialScore.score / 100) * 314} 314`} style={{ transition: 'stroke-dasharray 1s ease-out' }} />
+                <circle cx="60" cy="60" r="50" fill="none" stroke={scoreColor} strokeWidth="8" strokeLinecap="round" strokeDasharray={financialScore ? `${(financialScore.score / 100) * 314} 314` : '0 314'} style={{ transition: 'stroke-dasharray 1s ease-out' }} />
               </svg>
               <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: '26px', fontWeight: 700, color: 'white' }}>{financialScore.score}</span>
+                <span style={{ fontSize: '26px', fontWeight: 700, color: 'white' }}>{financialScore ? financialScore.score : '--'}</span>
                 <span style={{ fontSize: '9px', color: '#5a6d99' }}>dari 100</span>
               </div>
             </div>
-            <p style={{ fontSize: '13px', fontWeight: 600, color: scoreColor, marginBottom: '20px' }}>{getScoreLabel(financialScore.score)}</p>
+            <p style={{ fontSize: '13px', fontWeight: 600, color: scoreColor, marginBottom: '20px' }}>
+              {financialScore ? getScoreLabel(financialScore.score) : 'Menganalisa...'}
+            </p>
             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {Object.entries(financialScore.breakdown).map(([key, value]) => (
+              {financialScore && Object.entries(financialScore.breakdown).map(([key, value]) => (
                 <div key={key}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginBottom: '5px' }}>
                     <span style={{ color: '#5a6d99', textTransform: 'capitalize' }}>{key.replace(/_/g, ' ')}</span>
