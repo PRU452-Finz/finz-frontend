@@ -680,3 +680,560 @@ body {
     font-size: 12px;
   }
 }
+
+/* ═══════════════════════════════════════════
+   MOBILE-NATIVE EXPERIENCE (< 768px)
+   Premium Finance App Design
+   ═══════════════════════════════════════════ */
+
+/* ═══════════ Visibility Utilities ═══════════ */
+@media (min-width: 768px) {
+  .mobile-only { 
+    display: none !important; 
+  }
+}
+
+@media (max-width: 767px) {
+  .desktop-only { 
+    display: none !important; 
+  }
+}
+
+/* ═══════════ Bottom Navigation Bar ═══════════ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(8, 13, 24, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(16, 185, 129, 0.06);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 6px));
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 18px;
+  min-height: 50px;
+  border-radius: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav-item span {
+  font-size: 10px;
+  font-weight: 500;
+  color: #4A5C78;
+  transition: color 0.25s ease;
+}
+
+.bottom-nav-item svg {
+  color: #4A5C78;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bottom-nav-item.active {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.bottom-nav-item.active svg {
+  color: #10b981;
+  transform: scale(1.1) translateY(-1px);
+}
+
+.bottom-nav-item.active span {
+  color: #34d399;
+  font-weight: 600;
+}
+
+.bottom-nav-item:active {
+  transform: scale(0.9);
+}
+
+/* ═══════════ Mobile Header ═══════════ */
+.mobile-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(5, 11, 24, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.mobile-greeting {
+  font-size: 12px;
+  color: #5a6d99;
+  line-height: 1.2;
+}
+
+.mobile-username {
+  font-size: 17px;
+  font-weight: 700;
+  color: white;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+}
+
+/* ═══════════ Hero Balance Card ═══════════ */
+.hero-balance {
+  position: relative;
+  border-radius: 24px;
+  padding: 28px 24px 24px;
+  background: linear-gradient(165deg,
+    rgba(16, 185, 129, 0.14) 0%,
+    rgba(16, 185, 129, 0.06) 35%,
+    rgba(13, 21, 38, 0.95) 70%
+  );
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.hero-balance::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-balance::after {
+  content: '';
+  position: absolute;
+  bottom: -25px;
+  left: 25%;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5a6d99;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.hero-amount {
+  font-size: 34px;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-progress-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 99px;
+  background: rgba(21, 29, 53, 0.8);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.hero-progress-bar {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-prediction {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-pred-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-pred-label {
+  font-size: 12px;
+  color: #5a6d99;
+}
+
+.hero-pred-amount {
+  font-size: 15px;
+  font-weight: 700;
+  color: #34d399;
+}
+
+/* ═══════════ Summary Row (Income/Expense) ═══════════ */
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  padding: 14px 12px;
+  border-radius: 18px;
+  background: rgba(13, 21, 38, 0.85);
+  border: 1px solid rgba(30, 41, 59, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.summary-card:active {
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.summary-card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summary-card-icon.income {
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.summary-card-icon.expense {
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.summary-card-label {
+  font-size: 11px;
+  color: #5a6d99;
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+
+.summary-card-amount {
+  font-size: clamp(12px, 3.5vw, 15px);
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+
+/* ═══════════ Budget Alert (Compact) ═══════════ */
+.mobile-alert {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(13, 21, 38, 0.7);
+  border: 1px solid rgba(16, 185, 129, 0.1);
+  border-left: 3px solid #10b981;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.mobile-alert-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.mobile-alert-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.mobile-alert-text {
+  font-size: 12px;
+  color: #7B8BA5;
+  line-height: 1.6;
+}
+
+/* ═══════════ Mobile Section Header ═══════════ */
+.mobile-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding: 0 2px;
+}
+
+.mobile-section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.3px;
+}
+
+.mobile-section-action {
+  font-size: 13px;
+  color: #34d399;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  min-height: 44px;
+  transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  font-weight: 500;
+}
+
+.mobile-section-action:active {
+  background: rgba(16, 185, 129, 0.08);
+}
+
+/* ═══════════ Tappable List Tiles ═══════════ */
+.list-tile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+  position: relative;
+}
+
+.list-tile:active {
+  background: rgba(16, 185, 129, 0.04);
+}
+
+.list-tile + .list-tile {
+  border-top: 1px solid rgba(21, 29, 53, 0.6);
+}
+
+.list-tile-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.list-tile-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-tile-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-bottom: 2px;
+  line-height: 1.3;
+}
+
+.list-tile-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.list-tile-subtitle span {
+  font-size: 12px;
+  color: #5a6d99;
+}
+
+.list-tile-subtitle .dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #384770;
+}
+
+.list-tile-amount {
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-align: right;
+  letter-spacing: -0.3px;
+}
+
+.list-tile-amount.income { color: #10b981; }
+.list-tile-amount.expense { color: #f87171; }
+
+/* ═══════════ Transaction Card Container ═══════════ */
+.mobile-txn-card {
+  border-radius: 20px;
+  background: rgba(13, 21, 38, 0.7);
+  border: 1px solid rgba(30, 41, 59, 0.4);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+/* ═══════════ Floating Action Button ═══════════ */
+.fab {
+  position: fixed;
+  bottom: calc(140px + env(safe-area-inset-bottom, 8px));
+  right: 20px;
+  z-index: 45;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow:
+    0 4px 16px rgba(16, 185, 129, 0.4),
+    0 0 40px rgba(16, 185, 129, 0.12);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fab:active {
+  transform: scale(0.88) rotate(-8deg);
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+
+/* ═══════════ Recommendation Cards ═══════════ */
+.mobile-rec-card {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(13, 21, 38, 0.6);
+  border: 1px solid rgba(30, 41, 59, 0.3);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* ═══════════ Page Transitions ═══════════ */
+.page-transition {
+  animation: page-enter 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════ Mobile Main Content Adjustments ═══════════ */
+@media (max-width: 767px) {
+  .main-content {
+    padding: 16px 20px calc(84px + env(safe-area-inset-bottom, 6px)) !important;
+  }
+
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .main-wrapper {
+    margin-left: 0 !important;
+  }
+
+  .main-wrapper > footer {
+    display: none;
+  }
+}
+
+/* ═══════════ Mobile Touch Targets ═══════════ */
+@media (max-width: 767px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  p a, span a, .list-tile-subtitle a {
+    min-height: auto;
+    min-width: auto;
+  }
+}
+
+/* ═══════════ Statistik Page Grid ═══════════ */
+.stats-grid {
+  display: grid;
+  gap: 16px;
+}
+
+@media (max-width: 767px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 768px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ═══════════ Scroll Deck (kept for other pages) ═══════════ */
+.scroll-deck {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 0 16px;
+  scrollbar-width: none;
+}
+.scroll-deck::-webkit-scrollbar { display: none; }
+
+/* ═══════════ Reduced Motion ═══════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
