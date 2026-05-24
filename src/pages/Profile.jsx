@@ -12,11 +12,12 @@ import {
   Target,
   ShieldCheck,
   FloppyDisk,
+  SignOut,
 } from '@phosphor-icons/react';
 
 export default function Profile() {
   const { profile, budgets } = useFinance();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const userId = user?.id;
 
   const [profileForm, setProfileForm] = useState({
@@ -108,10 +109,28 @@ export default function Profile() {
   };
 
   return (
-    <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '24px' }}>
-        <p className="page-breadcrumb">User / Profile</p>
-        <h1 className="page-title">Pengaturan Profil & Budget</h1>
+    <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '80px' }}>
+      <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <p className="page-breadcrumb">User / Profile</p>
+          <h1 className="page-title">Pengaturan Profil & Budget</h1>
+        </div>
+        <button 
+          onClick={logout}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            padding: '10px 16px', borderRadius: '12px',
+            background: 'rgba(248, 113, 113, 0.1)',
+            border: '1px solid rgba(248, 113, 113, 0.2)',
+            color: '#f87171', fontSize: '14px', fontWeight: 600,
+            cursor: 'pointer', transition: 'all 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(248, 113, 113, 0.2)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(248, 113, 113, 0.1)'}
+        >
+          <SignOut size={18} weight="bold" />
+          Keluar
+        </button>
       </div>
 
       {message.text && (
