@@ -22,9 +22,21 @@ import {
   Money,
 } from '@phosphor-icons/react';
 
+import { useState, useEffect } from 'react';
+
 function useIsMobile() {
-  if (typeof window === 'undefined') return false;
-  return window.innerWidth < 768;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkIsMobile(); // Check immediately on mount
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
 }
 
 export default function Dashboard() {
@@ -110,21 +122,8 @@ export default function Dashboard() {
               <TrendUp size={20} color="#34d399" weight="duotone" />
             </div>
             <div>
-              <div className="insight-score-circle" style={{ '--score-color': scoreColor, border: `4px solid ${scoreColor}` }}>
-                {financialScore ? (
-                  <span className="insight-score-value">{financialScore.score}</span>
-                ) : (
-                  <span className="insight-score-value" style={{ fontSize: '16px' }}>--</span>
-                )}
-              </div>
-            </div>
-            <div className="insight-score-info">
-              <p className="insight-score-status" style={{ color: scoreColor }}>
-                {financialScore ? getScoreLabel(financialScore.score) : 'Menganalisa...'}
-              </p>
-              <p className="insight-score-desc">
-                {financialScore ? 'Skor finansial berdasarkan aktivitas Anda bulan ini.' : 'AI sedang menilai kebiasaan finansial Anda.'}
-              </p>
+              <p className="summary-card-label">Pemasukan</p>
+              <p className="summary-card-amount">{formatCurrency(summary.totalIncome)}</p>
             </div>
           </div>
           <div className="summary-card">
