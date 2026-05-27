@@ -30,6 +30,134 @@ function TypingIndicator() {
   );
 }
 
+/**
+ * Lightweight Markdown renderer — tanpa library tambahan.
+ * Mendukung: **bold**, *italic*, bullet list, numbered list, newlines.
+ */
+function renderMarkdown(text) {
+  if (!text) return null;
+
+  // Split by double newline for paragraphs, single newline for lines
+  const lines = text.split('\n');
+  const elements = [];
+  let listBuffer = [];
+  let listType = null; // 'ul' or 'ol'
+
+  const flushList = () => {
+    if (listBuffer.length > 0) {
+      const Tag = listType === 'ol' ? 'ol' : 'ul';
+      elements.push(
+        <Tag key={`list-${elements.length}`} style={{
+          margin: '6px 0', paddingLeft: '20px', listStyleType: listType === 'ol' ? 'decimal' : 'disc',
+        }}>
+          {listBuffer.map((item, i) => (
+            <li key={i} style={{ marginBottom: '3px' }}>{formatInline(item)}</li>
+          ))}
+        </Tag>
+      );
+      listBuffer = [];
+      listType = null;
+    }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Bullet list: - or *  (but not ** which is bold)
+    const bulletMatch = line.match(/^\s*[-*]\s+(.+)/);
+    if (bulletMatch && !line.match(/^\s*\*\*[^*]/)) {
+      if (listType === 'ol') flushList();
+      listType = 'ul';
+      listBuffer.push(bulletMatch[1]);
+      continue;
+    }
+
+    // Numbered list: 1. 2. etc
+    const numMatch = line.match(/^\s*\d+[.)]\s+(.+)/);
+    if (numMatch) {
+      if (listType === 'ul') flushList();
+      listType = 'ol';
+      listBuffer.push(numMatch[1]);
+      continue;
+    }
+
+    // Not a list item — flush any pending list
+    flushList();
+
+    // Empty line = spacing
+    if (line.trim() === '') {
+      elements.push(<div key={`br-${i}`} style={{ height: '8px' }} />);
+      continue;
+    }
+
+    // Normal paragraph
+    elements.push(
+      <p key={`p-${i}`} style={{ margin: '2px 0' }}>{formatInline(line)}</p>
+    );
+  }
+
+  flushList(); // flush remaining list
+  return elements;
+}
+
+/**
+ * Format inline markdown: **bold**, *italic*
+ */
+function formatInline(text) {
+  // Split by markdown patterns and create React elements
+  const parts = [];
+  let remaining = text;
+  let key = 0;
+
+  while (remaining.length > 0) {
+    // Bold: **text**
+    const boldMatch = remaining.match(/\*\*(.+?)\*\*/);
+    // Italic: *text* (but not **)
+    const italicMatch = remaining.match(/(?<!\*)\*([^*]+?)\*(?!\*)/);
+
+    // Find which comes first
+    let firstMatch = null;
+    let matchType = null;
+
+    if (boldMatch && (!italicMatch || boldMatch.index <= italicMatch.index)) {
+      firstMatch = boldMatch;
+      matchType = 'bold';
+    } else if (italicMatch) {
+      firstMatch = italicMatch;
+      matchType = 'italic';
+    }
+
+    if (!firstMatch) {
+      parts.push(remaining);
+      break;
+    }
+
+    // Add text before match
+    if (firstMatch.index > 0) {
+      parts.push(remaining.substring(0, firstMatch.index));
+    }
+
+    // Add formatted text
+    if (matchType === 'bold') {
+      parts.push(
+        <strong key={`b-${key++}`} style={{ fontWeight: 700, color: '#6ee7b7' }}>
+          {firstMatch[1]}
+        </strong>
+      );
+    } else {
+      parts.push(
+        <em key={`i-${key++}`} style={{ fontStyle: 'italic', color: '#a7f3d0' }}>
+          {firstMatch[1]}
+        </em>
+      );
+    }
+
+    remaining = remaining.substring(firstMatch.index + firstMatch[0].length);
+  }
+
+  return parts;
+}
+
 function Message({ msg }) {
   const isUser = msg.role === 'user';
   return (
@@ -65,13 +193,12 @@ function Message({ msg }) {
           fontSize: '13px',
           lineHeight: '1.6',
           wordBreak: 'break-word',
-          whiteSpace: 'pre-wrap',
           boxShadow: isUser
             ? '0 2px 12px rgba(16, 185, 129, 0.2)'
             : '0 2px 8px rgba(0,0,0,0.2)',
         }}
       >
-        {msg.content}
+        {isUser ? msg.content : renderMarkdown(msg.content)}
       </div>
       {isUser && (
         <div style={{
