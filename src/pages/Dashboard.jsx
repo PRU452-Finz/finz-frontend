@@ -63,7 +63,13 @@ export default function Dashboard() {
 
   if (!summary) return null;
 
+  const now = new Date();
+  const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const MONTHS_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const currentMonthLabel = `${MONTHS_ID[now.getMonth()]} ${now.getFullYear()}`;
+
   const recentTransactions = [...transactions]
+    .filter(t => t.date && t.date.startsWith(currentMonthStr))
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 5);
 
@@ -151,14 +157,22 @@ export default function Dashboard() {
 
         {/* Transaction Section */}
         <div className="mobile-section-header">
-          <h2 className="mobile-section-title">Riwayat Transaksi</h2>
+          <div>
+            <h2 className="mobile-section-title">Riwayat Transaksi</h2>
+            <p style={{ fontSize: '11px', color: '#5a6d99', marginTop: '2px' }}>{currentMonthLabel}</p>
+          </div>
           <a href="/transactions" className="mobile-section-action">
             Semua <ArrowRight size={14} />
           </a>
         </div>
 
         <div className="mobile-txn-card">
-          {recentTransactions.map((t) => (
+          {recentTransactions.length === 0 ? (
+            <div style={{ padding: '24px', textAlign: 'center' }}>
+              <p style={{ fontSize: '13px', color: '#5a6d99', marginBottom: '8px' }}>Belum ada transaksi bulan ini</p>
+              <a href="/add" style={{ fontSize: '12px', color: '#34d399', textDecoration: 'none' }}>+ Tambah sekarang</a>
+            </div>
+          ) : recentTransactions.map((t) => (
             <div key={t.id} className="list-tile">
               <div className="list-tile-icon" style={{ background: `${CATEGORY_COLORS[t.category]}15` }}>
                 {CATEGORY_EMOJIS[t.category]}
@@ -313,26 +327,35 @@ export default function Dashboard() {
       </div>
 
       <div className="dash-grid-2-1" style={{ marginBottom: '20px' }}>
-        <Card title="Riwayat Transaksi" subtitle="Transaksi terakhir" delay={4}
+        <Card title="Riwayat Transaksi" subtitle={currentMonthLabel} delay={4}
           action={<a href="/transactions" style={{ fontSize: '12px', color: '#34d399', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>Lihat Semua <ArrowRight size={12} /></a>}
         >
-          <div className="txn-table-header">
-            <span>DESKRIPSI</span><span>TANGGAL</span><span>METODE</span><span style={{ textAlign: 'right' }}>NOMINAL</span>
-          </div>
-          {recentTransactions.map((t, i) => (
-            <div key={t.id} className="txn-table-row" style={{ borderBottom: i < recentTransactions.length - 1 ? '1px solid rgba(21, 29, 53, 0.5)' : 'none' }}>
-              <div className="txn-desc" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${CATEGORY_COLORS[t.category]}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', flexShrink: 0 }}>{CATEGORY_EMOJIS[t.category]}</div>
-                <div style={{ minWidth: 0 }}>
-                  <p style={{ fontSize: '13px', fontWeight: 500, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.description}</p>
-                  <p style={{ fontSize: '11px', color: '#5a6d99' }}>{t.category}</p>
-                </div>
-              </div>
-              <span className="txn-meta" style={{ fontSize: '12px', color: '#8b9cc4' }}>{formatDate(t.date)}</span>
-              <div className="txn-meta"><span className="tag tag-purple" style={{ textTransform: 'capitalize' }}>{t.payment_method}</span></div>
-              <p className="txn-amount" style={{ fontSize: '13px', fontWeight: 600, color: t.transaction_type === 'income' ? '#10b981' : '#f87171', textAlign: 'right' }}>{t.transaction_type === 'income' ? '+' : '-'}{formatCurrency(t.nominal)}</p>
+          {recentTransactions.length === 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 0', textAlign: 'center' }}>
+              <p style={{ fontSize: '13px', color: '#5a6d99', marginBottom: '8px' }}>Belum ada transaksi di {currentMonthLabel}</p>
+              <a href="/add" style={{ fontSize: '12px', color: '#34d399', textDecoration: 'none' }}>+ Tambah transaksi</a>
             </div>
-          ))}
+          ) : (
+            <>
+              <div className="txn-table-header">
+                <span>DESKRIPSI</span><span>TANGGAL</span><span>METODE</span><span style={{ textAlign: 'right' }}>NOMINAL</span>
+              </div>
+              {recentTransactions.map((t, i) => (
+                <div key={t.id} className="txn-table-row" style={{ borderBottom: i < recentTransactions.length - 1 ? '1px solid rgba(21, 29, 53, 0.5)' : 'none' }}>
+                  <div className="txn-desc" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: `${CATEGORY_COLORS[t.category]}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', flexShrink: 0 }}>{CATEGORY_EMOJIS[t.category]}</div>
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontSize: '13px', fontWeight: 500, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.description}</p>
+                      <p style={{ fontSize: '11px', color: '#5a6d99' }}>{t.category}</p>
+                    </div>
+                  </div>
+                  <span className="txn-meta" style={{ fontSize: '12px', color: '#8b9cc4' }}>{formatDate(t.date)}</span>
+                  <div className="txn-meta"><span className="tag tag-purple" style={{ textTransform: 'capitalize' }}>{t.payment_method}</span></div>
+                  <p className="txn-amount" style={{ fontSize: '13px', fontWeight: 600, color: t.transaction_type === 'income' ? '#10b981' : '#f87171', textAlign: 'right' }}>{t.transaction_type === 'income' ? '+' : '-'}{formatCurrency(t.nominal)}</p>
+                </div>
+              ))}
+            </>
+          )}
         </Card>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
