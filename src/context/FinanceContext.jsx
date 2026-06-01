@@ -157,7 +157,8 @@ export function FinanceProvider({ children }) {
 
         // Interceptor sudah unwrap response.data, jadi langsung pakai hasilnya
         const summary = mapSummary(dashResp.data ?? dashResp);
-        const currentBalance = (summary.totalIncome || 0) - (summary.totalSpending || 0);
+        // Pakai saldo kumulatif all-time, bukan cuma bulan ini
+        const currentBalance = summary.currentBalance ?? ((summary.totalIncome || 0) - (summary.totalSpending || 0));
         const safeBalance = Math.max(0, currentBalance);
 
         // Render dashboard SECARA INSTAN!
@@ -197,7 +198,7 @@ export function FinanceProvider({ children }) {
     try {
       const dashResp = await dashboardAPI.getSummary();
       const summary = mapSummary(dashResp.data ?? dashResp);
-      const currentBalance = (summary.totalIncome || 0) - (summary.totalSpending || 0);
+      const currentBalance = summary.currentBalance ?? ((summary.totalIncome || 0) - (summary.totalSpending || 0));
       
       const predResp = await predictionAPI.getBalance({ current_balance: Math.max(0, currentBalance) });
       

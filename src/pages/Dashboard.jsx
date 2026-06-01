@@ -228,7 +228,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#34d399' }}>{balancePercent}%</span>
               </div>
             </div>
-            <p className="stat-value" style={{ lineHeight: 1 }}>{formatCurrency(prediction ? prediction.current_balance : currentBalance)}</p>
+            <p className="stat-value" style={{ lineHeight: 1 }}>{formatCurrency(currentBalance)}</p>
           </div>
         </div>
 
