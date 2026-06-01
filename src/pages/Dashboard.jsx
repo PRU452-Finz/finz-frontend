@@ -340,11 +340,17 @@ export default function Dashboard() {
               <Lightning size={18} color="#10b981" weight="fill" />
               <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>Budget Warning</h3>
             </div>
-            <p style={{ fontSize: '12px', color: '#8b9cc4', lineHeight: 1.7, marginBottom: '14px' }}>{prediction.message}</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
-              <span style={{ fontSize: '12px', color: '#5a6d99' }}>Status:</span>
-              <Badge status={prediction.status} />
-            </div>
+            {prediction ? (
+              <>
+                <p style={{ fontSize: '12px', color: '#8b9cc4', lineHeight: 1.7, marginBottom: '14px' }}>{prediction.message}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
+                  <span style={{ fontSize: '12px', color: '#5a6d99' }}>Status:</span>
+                  <Badge status={prediction.status} />
+                </div>
+              </>
+            ) : (
+              <p style={{ fontSize: '12px', color: '#5a6d99', lineHeight: 1.7, marginBottom: '18px' }}>AI sedang menganalisa keuangan kamu...</p>
+            )}
             <a href="/add" style={{ textDecoration: 'none' }}>
               <button className="btn-primary" style={{ width: '100%', padding: '12px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                 <Lightning size={16} weight="fill" /> Tambah Transaksi
