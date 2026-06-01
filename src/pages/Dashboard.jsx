@@ -67,7 +67,8 @@ export default function Dashboard() {
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 5);
 
-  const currentBalance = (summary?.totalIncome || 0) - (summary?.totalSpending || 0);
+  // Pakai saldo kumulatif all-time dari backend, fallback ke hitung bulan ini
+  const currentBalance = summary?.currentBalance ?? ((summary?.totalIncome || 0) - (summary?.totalSpending || 0));
 
   const getScoreColor = (s) => s >= 80 ? '#10b981' : s >= 60 ? '#34d399' : s >= 40 ? '#fbbf24' : '#f87171';
   const getScoreLabel = (s) => s >= 80 ? 'Sangat Baik' : s >= 60 ? 'Cukup Baik' : s >= 40 ? 'Perlu Perbaikan' : 'Kurang Baik';

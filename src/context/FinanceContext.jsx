@@ -92,10 +92,14 @@ const mapSummary = (data) => ({
   totalIncome:       data.total_income,
   transactionCount:  data.transaction_count,
   avgDaily:          data.avg_daily,
-  categoryBreakdown: data.category_breakdown,   // { makanan: 311000, ... }
-  dailyBreakdown:    data.daily_breakdown,       // { "2026-04-01": 50000, ... }
-  monthlyBreakdown:  data.monthly_breakdown,     // { "2026-04": 2360000, ... }
+  categoryBreakdown: data.category_breakdown,
+  dailyBreakdown:    data.daily_breakdown,
+  monthlyBreakdown:  data.monthly_breakdown,
   period:            data.period,
+  // Saldo kumulatif all-time dari backend
+  currentBalance:    data.current_balance ?? null,
+  allTimeIncome:     data.all_time_income  ?? null,
+  allTimeSpending:   data.all_time_spending ?? null,
 });
 
 /**
