@@ -151,15 +151,16 @@ export function FinanceProvider({ children }) {
           userAPI.getBudgets(userId, new Date().toISOString().slice(0, 7)),
         ]);
 
-        const summary = mapSummary(dashResp.data);
+        // Interceptor sudah unwrap response.data, jadi langsung pakai hasilnya
+        const summary = mapSummary(dashResp.data ?? dashResp);
         const currentBalance = (summary.totalIncome || 0) - (summary.totalSpending || 0);
         const safeBalance = Math.max(0, currentBalance);
 
         // Render dashboard SECARA INSTAN!
-        dispatch({ type: ACTIONS.SET_TRANSACTIONS,    payload: txnResp.data   || [] });
+        dispatch({ type: ACTIONS.SET_TRANSACTIONS,    payload: (txnResp.data ?? txnResp)   || [] });
         dispatch({ type: ACTIONS.SET_SUMMARY,         payload: summary });
-        dispatch({ type: ACTIONS.SET_PROFILE,         payload: profileResp.data });
-        dispatch({ type: ACTIONS.SET_BUDGETS,         payload: budgetResp.data || [] });
+        dispatch({ type: ACTIONS.SET_PROFILE,         payload: profileResp.data ?? profileResp });
+        dispatch({ type: ACTIONS.SET_BUDGETS,         payload: (budgetResp.data ?? budgetResp) || [] });
         
         // Matikan loading screen agar user tidak menunggu AI
         dispatch({ type: ACTIONS.SET_LOADING, payload: false });
@@ -170,9 +171,9 @@ export function FinanceProvider({ children }) {
           recommendationAPI.getAll(userId),
           predictionAPI.getBalance({ current_balance: safeBalance })
         ]).then(([scoreResp, recResp, predResp]) => {
-          dispatch({ type: ACTIONS.SET_FINANCIAL_SCORE, payload: mapFinancialScore(scoreResp.data) });
-          dispatch({ type: ACTIONS.SET_RECOMMENDATIONS, payload: recResp.data   || [] });
-          dispatch({ type: ACTIONS.SET_PREDICTION,      payload: mapPrediction(predResp.data) });
+          dispatch({ type: ACTIONS.SET_FINANCIAL_SCORE, payload: mapFinancialScore(scoreResp.data ?? scoreResp) });
+          dispatch({ type: ACTIONS.SET_RECOMMENDATIONS, payload: (recResp.data ?? recResp)   || [] });
+          dispatch({ type: ACTIONS.SET_PREDICTION,      payload: mapPrediction(predResp.data ?? predResp) });
         }).catch(err => {
           console.error('[FinanceContext] Gagal fetch AI data secara background:', err);
         });
@@ -191,13 +192,13 @@ export function FinanceProvider({ children }) {
   const refreshSummaryAndPrediction = useCallback(async () => {
     try {
       const dashResp = await dashboardAPI.getSummary();
-      const summary = mapSummary(dashResp.data);
+      const summary = mapSummary(dashResp.data ?? dashResp);
       const currentBalance = (summary.totalIncome || 0) - (summary.totalSpending || 0);
       
       const predResp = await predictionAPI.getBalance({ current_balance: Math.max(0, currentBalance) });
       
       dispatch({ type: ACTIONS.SET_SUMMARY,    payload: summary });
-      dispatch({ type: ACTIONS.SET_PREDICTION, payload: mapPrediction(predResp.data) });
+      dispatch({ type: ACTIONS.SET_PREDICTION, payload: mapPrediction(predResp.data ?? predResp) });
     } catch (err) {
       console.error('[FinanceContext] Gagal refresh summary:', err);
     }
@@ -215,7 +216,7 @@ export function FinanceProvider({ children }) {
       is_recurring:     formData.is_recurring || false,
     });
 
-    const newTxn = resp.data;
+    const newTxn = resp.data ?? resp;
     dispatch({ type: ACTIONS.ADD_TRANSACTION, payload: newTxn });
 
     // Update chart & prediksi di background
@@ -236,7 +237,7 @@ export function FinanceProvider({ children }) {
       is_recurring:     transaction.is_recurring,
     });
 
-    const updated = resp.data;
+    const updated = resp.data ?? resp;
     dispatch({ type: ACTIONS.UPDATE_TRANSACTION, payload: updated });
     refreshSummaryAndPrediction();
     return updated;
