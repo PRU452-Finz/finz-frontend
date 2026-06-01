@@ -18,6 +18,10 @@ import {
   X,
 } from '@phosphor-icons/react';
 
+// ─── Helper: format "Juni 2026" dari Date ─────────────────────────────────
+const MONTHS_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const formatMonthLabel = (year, month) => `${MONTHS_ID[month]} ${year}`;
+
 const PER_PAGE = 10;
 
 export default function Transactions() {
@@ -30,15 +34,40 @@ export default function Transactions() {
   const [deletingId, setDeletingId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // ─── Month navigation (default: bulan berjalan) ──────────────────
+  const now = new Date();
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth()); // 0-indexed
+
+  const goToPrevMonth = () => {
+    if (selectedMonth === 0) { setSelectedYear(y => y - 1); setSelectedMonth(11); }
+    else setSelectedMonth(m => m - 1);
+    setCurrentPage(1);
+  };
+  const goToNextMonth = () => {
+    const isCurrentMonth = selectedYear === now.getFullYear() && selectedMonth === now.getMonth();
+    if (isCurrentMonth) return; // Tidak bisa ke depan
+    if (selectedMonth === 11) { setSelectedYear(y => y + 1); setSelectedMonth(0); }
+    else setSelectedMonth(m => m + 1);
+    setCurrentPage(1);
+  };
+  const isCurrentMonth = selectedYear === now.getFullYear() && selectedMonth === now.getMonth();
+
+  // YYYY-MM string untuk filter
+  const selectedMonthStr = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
+
   const filteredTransactions = useMemo(() => {
     return transactions.filter((t) => {
+      // Filter bulan utama
+      if (t.date && !t.date.startsWith(selectedMonthStr)) return false;
+      // Filter tambahan
       if (searchQuery && !t.description.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       if (selectedCategory !== 'all' && t.category !== selectedCategory) return false;
       if (dateRange.from && new Date(t.date) < new Date(dateRange.from)) return false;
       if (dateRange.to && new Date(t.date) > new Date(dateRange.to)) return false;
       return true;
     });
-  }, [transactions, searchQuery, selectedCategory, dateRange]);
+  }, [transactions, searchQuery, selectedCategory, dateRange, selectedMonthStr]);
 
   const sortedTransactions = useMemo(() => {
     return [...filteredTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -54,7 +83,8 @@ export default function Transactions() {
   const startItem = (safePage - 1) * PER_PAGE + 1;
   const endItem = Math.min(safePage * PER_PAGE, sortedTransactions.length);
 
-  const totalFiltered = filteredTransactions.reduce((sum, t) => sum + (t.nominal || t.amount || 0), 0);
+
+
 
   const handleDelete = async (id) => {
     setDeletingId(id);
@@ -79,6 +109,10 @@ export default function Transactions() {
   };
 
   const hasActiveFilters = searchQuery || selectedCategory !== 'all' || dateRange.from || dateRange.to;
+
+  // Summary bulan ini
+  const monthIncome   = filteredTransactions.filter(t => t.transaction_type === 'income').reduce((s, t) => s + (t.nominal || t.amount || 0), 0);
+  const monthExpense  = filteredTransactions.filter(t => t.transaction_type === 'expense').reduce((s, t) => s + (t.nominal || t.amount || 0), 0);
 
   // Generate page numbers to show
   const getPageNumbers = () => {
@@ -119,9 +153,6 @@ export default function Transactions() {
         <div>
           <p className="page-breadcrumb">Dashboard / Transaksi</p>
           <h1 className="page-title">Transaksi</h1>
-          <p style={{ fontSize: '13px', color: '#5a6d99', marginTop: '4px' }}>
-            {filteredTransactions.length} transaksi • Total {formatCurrency(totalFiltered)}
-          </p>
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
@@ -139,6 +170,49 @@ export default function Transactions() {
           {hasActiveFilters && (
             <span style={{ width: '6px', height: '6px', background: '#10b981', borderRadius: '50%' }} />
           )}
+        </button>
+      </div>
+
+      {/* ─── Month Navigation Bar ──────────────────────────────────── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: 'rgba(15, 22, 41, 0.5)', border: '1px solid rgba(30, 42, 74, 0.7)',
+        borderRadius: '16px', padding: '12px 16px', marginBottom: '16px',
+      }}>
+        {/* Prev */}
+        <button onClick={goToPrevMonth} style={{
+          width: '36px', height: '36px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+          background: 'rgba(30, 42, 74, 0.6)', color: '#8b9cc4',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s',
+        }}>
+          <CaretLeft size={16} />
+        </button>
+
+        {/* Month label + summary */}
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontSize: '16px', fontWeight: 700, color: 'white', marginBottom: '4px' }}>
+            {formatMonthLabel(selectedYear, selectedMonth)}
+            {isCurrentMonth && (
+              <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 600, color: '#10b981', background: 'rgba(16,185,129,0.12)', padding: '2px 8px', borderRadius: '999px' }}>Bulan ini</span>
+            )}
+          </p>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <span style={{ fontSize: '12px', color: '#34d399' }}>+{formatCurrency(monthIncome)}</span>
+            <span style={{ fontSize: '12px', color: '#5a6d99' }}>•</span>
+            <span style={{ fontSize: '12px', color: '#f87171' }}>-{formatCurrency(monthExpense)}</span>
+            <span style={{ fontSize: '12px', color: '#5a6d99' }}>•</span>
+            <span style={{ fontSize: '12px', color: '#8b9cc4' }}>{filteredTransactions.length} transaksi</span>
+          </div>
+        </div>
+
+        {/* Next */}
+        <button onClick={goToNextMonth} disabled={isCurrentMonth} style={{
+          width: '36px', height: '36px', borderRadius: '10px', border: 'none',
+          cursor: isCurrentMonth ? 'not-allowed' : 'pointer',
+          background: 'rgba(30, 42, 74, 0.6)', color: isCurrentMonth ? '#2a3a5c' : '#8b9cc4',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s',
+        }}>
+          <CaretRight size={16} />
         </button>
       </div>
 
@@ -193,9 +267,15 @@ export default function Transactions() {
           <Card>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0', textAlign: 'center' }}>
               <Receipt size={48} color="#1e2a4a" weight="duotone" style={{ marginBottom: '14px' }} />
-              <p style={{ fontSize: '15px', fontWeight: 500, color: '#8b9cc4' }}>Belum ada transaksi</p>
+              <p style={{ fontSize: '15px', fontWeight: 500, color: '#8b9cc4' }}>
+                Belum ada transaksi di {formatMonthLabel(selectedYear, selectedMonth)}
+              </p>
               <p style={{ fontSize: '12px', color: '#5a6d99', marginTop: '6px' }}>
-                {hasActiveFilters ? 'Coba ubah filter pencarian' : 'Tambahkan transaksi pertamamu'}
+                {hasActiveFilters
+                  ? 'Coba ubah filter pencarian'
+                  : selectedMonth < now.getMonth() || selectedYear < now.getFullYear()
+                    ? 'Tidak ada transaksi tercatat di bulan ini'
+                    : 'Tambahkan transaksi pertamamu bulan ini'}
               </p>
             </div>
           </Card>
