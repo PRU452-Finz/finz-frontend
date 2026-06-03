@@ -34,8 +34,13 @@ export default function AddTransaction() {
   const [aiSuggestion, setAiSuggestion] = useState(null);
 
   useEffect(() => {
-    if (form.description.length >= 3) {
-      // predictCategory sekarang async — panggil backend
+    if (form.description.length < 3) {
+      setAiSuggestion(null);
+      return;
+    }
+
+    // Debounce 600ms — hanya kirim request setelah user berhenti mengetik
+    const timer = setTimeout(() => {
       predictCategory(form.description)
         .then((predicted) => {
           if (predicted && predicted !== form.category) {
@@ -45,9 +50,10 @@ export default function AddTransaction() {
           }
         })
         .catch(() => setAiSuggestion(null));
-    } else {
-      setAiSuggestion(null);
-    }
+    }, 600);
+
+    // Batalkan timer jika deskripsi berubah sebelum 600ms
+    return () => clearTimeout(timer);
   }, [form.description, form.category]); // predictCategory dikeluarkan dari deps agar tidak re-run terus
 
   const handleChange = (e) => {
