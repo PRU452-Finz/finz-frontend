@@ -16,6 +16,14 @@ dist-ssr
 .env
 .env.*
 
+# Documentation & non-production files
+.agent/
+document/
+docs/
+*.pdf
+finz_user_guide.html
+generate_pdf_html.py
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
